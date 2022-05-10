@@ -165,7 +165,7 @@ for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 					#Fase 3 Clasificador
 	#			./3-classify.sh "${input}" "${OUT_INDEX}" "${OUT_ACCESS}" "${uri_actual}"	#el fichero de access solo es necesario para la modalidad "online"  ${PATH_ACCESS_LOG} ${OUT_ACCESS}
 				#pasamos última línea de fichero .index
-				last_line_index=$(tail -1 "${OUT_INDEX}")
+				[ -f "${OUT_INDEX}" ] && last_line_index=$(tail -1 "${OUT_INDEX}") || last_line_index="uri_limpia"
 				"${DIR_ROOT}/${CLASSIFY_SCRIPT}" "${i}" "${uris_totales}" "${last_line_index}" "${input}" "${uri_actual}"
 				[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de clasificación.
 

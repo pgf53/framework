@@ -216,7 +216,10 @@ elif os.environ["LAUNCH_MODE"] == "1to1":
 	uri = sys.argv[4]
 	num_uri = sys.argv[5]
 
-	uri_index = extrae_uri(line_index)
+	if line_index != "uri_limpia":
+		uri_index = extrae_uri(line_index)
+	else:
+		uri_index = "limpia"
 
 	#Comprobamos el formato de entrada
 	if os.environ["URIS_FORMAT"] == "basic":

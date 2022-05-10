@@ -4,7 +4,7 @@
 
 #DIRECTORIOS. Directorios necesarios para el funcionamiento de la herramienta.
 
-DIR_ROOT="/opt/cluster/framework/01-Enviar_Tarea/framework"	#Directorio raíz de la herramienta
+DIR_ROOT="/opt/framework"	#Directorio raíz de la herramienta
 #DIR_ROOT="/opt/nuevo_Cloud/Tareas/framework/entrada/software_framework"
 DIR_REMOTE="/opt"	#Usado en online-remoto. Directorio de trabajo de equipo remoto donde se desplegarán los scripts de monitorización
 DIR_TMP="/tmp"	#Fichero de trabajo temporal. Usado en tiempo de ejecución para almacenar temporalmente ciertos resultados.
