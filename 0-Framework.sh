@@ -48,7 +48,24 @@ OUT_ATTACKS="$4"
 	fi
 }
 
-
+#Comprobación del formato de uri de entrada
+comprobar_formato()
+{
+	URI="$1"
+	var=$(printf "%s" "${URI}" | grep -P '\t')
+	var=$?
+	if [ "${var}" -eq 0 -a "${URIS_FORMAT}" = "basic" ]; then 
+		echo "URIS_FORMAT inválido. El formato de entrada \"${URIS_FORMAT}\" seleccionado no se corresponde con entrada:"
+		printf "%s" "${URI}"
+		echo "Se sale..."
+		exit 1
+	elif [ "${var}" -eq 1 -a "${URIS_FORMAT}" = "extended" ]; then 
+		echo "URIS_FORMAT inválido. El formato de entrada \"${URIS_FORMAT}\" seleccionado no se corresponde con entrada:"
+		printf "%s" "${URI}"
+		echo "Se sale..."
+		exit 1
+	fi
+}
 
 #### Main ######
 if [ ! -d "${DIRIN_URI}" ]; then 
@@ -56,8 +73,6 @@ if [ ! -d "${DIRIN_URI}" ]; then
 	exit 1
 fi
 
-#rm -rf "${DIR_ENCODED_URI}"
-#mkdir "${DIR_ENCODED_URI}"
 
 #OJO! TEN EN CUENTA QUE BORRAS LOS RESULTADOS EN CAJA EJECUCIÓN DE FRAMEWORK
 rm -rf "${PATH_LOG}" "${DIROUT_INDEX}" "${DIROUT_ATTACKS}" "${DIROUT_CLEAN}" "${RESULTADOS}" 1>/dev/null 2>&1
@@ -87,11 +102,8 @@ for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 	OUT_ATTACKS="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${ATTACKS_EXTENSION}"
 	OUT_LOG="${DIR_ROOT}/${PATH_LOG}/$(basename ${i%.*})${LOG_EXTENSION}"	#fichero donde queda regisrado el audit_log
 	OUT_LOG_TMP="${DIR_TMP_FAST}/$(basename ${i%.*})${LOG_EXTENSION}"	#fichero donde queda registrado el log relativo a una uri (temporal)
-	#OUT_ACCESS="${DIR_ROOT}/${PATH_LOG}/access_log"	#fichero donde queda registrado el acces_log
-	#OUT_ACCESS_TMP="/dev/shm/access_log"			#fichero donde queda registrado el acces_log de uri actual
 	OUT_INDEX="${DIR_ROOT}/${DIROUT_INDEX}/$(basename ${i%.*})${INDEX_EXTENTION}"	#fichero de index generado
 	uris_totales=$(wc -l "${i}" | cut -d' ' -f1)
-	#IP_REMOTE=$(printf "${SERVERURL}" | cut -d'/' -f3)
 
 	#################################1-1#############################
 	case "${LAUNCH_MODE}" in
@@ -121,6 +133,10 @@ for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 				uri_actual=1
 				while IFS= read -r input	#Si el formato es "basico" "input=uri lanzada".
 				do
+					
+					#Fase 0: comprobamos que el formato sea el correcto
+					comprobar_formato
+
 					#Fase 1: Lanzamiento
 					if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "online-remoto" ]; then 
 						rm -f "${OUT_LOG_TMP}" 1>/dev/null 2>&1	#eliminamos fichero de log temporal de uri anterior
@@ -137,13 +153,6 @@ for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 						cat "${PATH_AUDIT_LOG}" >> "${OUT_LOG}"
 					fi
 					
-					#Salidas fase 1
-					#OUT_LOG="${PATH_LOG}/$(basename ${i%.*}).log"	#fichero donde queda regisrado el log
-					#OUT_LOG_TMP="/dev/shm/$(basename ${i%.*}).log"	#fichero donde queda registrado el log relativo a una uri (temporal)
-					#OUT_ACCESS="${DIR_ROOT}/${PATH_LOG}/access_log"	#fichero donde queda registrado el acces_log
-
-					#bucle de espera. Hasta que la uri no ha sido registrada en el log, se detiene la ejecución del script. 
-					#cuando no existe servidor (modalidad offline) esto no es necesario. 
 
 					if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "online-remoto" ]; then 
 						while true
@@ -156,11 +165,14 @@ for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 					fi
 
 					#Fase 2: Análisis
-					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG_TMP}"
+					if [ "${URIS_FORMAT}" = "basic" ]; then
+						uri_entrada="${input}"
+					else
+						uri_entrada=$(printf "%s" "${input}" | cut -d'	' -f2)
+					fi
+
+					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG_TMP}" "${uri_entrada}"
 					[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de análisis.
-				
-					#Salidas Fase 2
-					#OUT_INDEX="${DIR_ROOT}/${DIROUT_INDEX}/$(basename ${i%.*}).index"	#fichero de index generado
 
 					#Fase 3 Clasificador
 	#			./3-classify.sh "${input}" "${OUT_INDEX}" "${OUT_ACCESS}" "${uri_actual}"	#el fichero de access solo es necesario para la modalidad "online"  ${PATH_ACCESS_LOG} ${OUT_ACCESS}
@@ -213,12 +225,6 @@ for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 					printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
 					uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
 				done < "${i}"
-
-				#Salidas Fase 1:
-				#OUT_LOG="${DIR_ROOT}/${PATH_LOG}/$(basename ${i%.*}).log"	#fichero donde queda regisrado el audit_log
-				#OUT_ACCESS="${DIR_ROOT}/${PATH_LOG}/access_log"	#fichero donde queda registrado el acces_log
-
-				#[ "${LAUNCH_TYPE}" = "online-local" ] && cp "${PATH_ACCESS_LOG}" "${OUT_ACCESS}"
 
 				printf "\n"
 				if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "offline" ]; then

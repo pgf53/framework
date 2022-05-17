@@ -9,25 +9,6 @@
 
 URI="$1" #Uri a lanzar
 
-#Comprobación del formato de uri de entrada
-var=$(printf "%s" "${URI}" | grep -P '\t')
-var=$?
-if [ "${var}" -eq 0 -a "${URIS_FORMAT}" = "basic" ]; then 
-	echo "URIS_FORMAT inválido. El formato de entrada \"${URIS_FORMAT}\" seleccionado no se corresponde con entrada:"
-	printf "%s" "${URI}"
-	echo "Se sale..."
-	exit 1
-elif [ "${var}" -eq 1 -a "${URIS_FORMAT}" = "extended" ]; then 
-	echo "URIS_FORMAT inválido. El formato de entrada \"${URIS_FORMAT}\" seleccionado no se corresponde con entrada:"
-	printf "%s" "${URI}"
-	echo "Se sale..."
-	exit 1
-fi
-
-#Tipos de lanzamientos "online-local", "online-remoto" y "offline"
-#En los formatos online deben escaparse los caracteres: '{', '}', '[' y ']'
-#Además en el formato online deben codificarse los caracteres: ' ' y '#'
-
 case "${LAUNCH_TYPE}" in
 	online-local)
 		case "${URIS_FORMAT}" in

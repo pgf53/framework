@@ -295,116 +295,183 @@ generarIndiceDeLog()
     URI_EXTRAIDA=0
     SIGUIENTE_TRANSACCION=0	# Saltar a la siguiente
 
-    # Se lee el fichero de log  linea a linea
-    #while read lineaLog ; do 
-	while IFS= read -r lineaLog ; do
+	#Si tenemos envío 1-1 
+	if [ "${LAUNCH_MODE}" = "1to1" ]; then
+		if [ -s "${IN}" ];  then
+			#Cogemos Timestamp
+			TIMESTAMP_1=$(head -2 "${IN}" | tail -1 | cut -d' ' -f'1')
+			TIMESTAMP_2=$(head -2 "${IN}" | tail -1 | cut -d' ' -f'2')
+			timestampUri=$(printf "%s %s" "${TIMESTAMP_1}" "${TIMESTAMP_2}" | sed -e 's/\[//g' -e 's/\]//g')
 
-        # Identificar la seccion de la Transaccion en la que estamos
-		INICIO_SECCION="0"
-        SECCION_ACTUALtmp=$(detectarCambioSeccion  "${lineaLog}")
-		if [ -n "${SECCION_ACTUALtmp}" ]; then 
-			SECCION_ACTUAL=${SECCION_ACTUALtmp}
-			INICIO_SECCION="1"
-			if [ "${LAUNCH_MODE}" = "multiple" -a "${SECCION_ACTUALtmp}" = "${SECCIONA}" ]; then
-				printf "\r                                          "
-				printf "\r(%s/%s)"  "${uri_actual}"  "${NTOTAL_ENTRADAS}"
-				uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
-			fi
-		fi
-	
-	case "${SECCION_ACTUAL}" in
+			#Uri la cogemos de fichero de entrada (la que se ha lanzado)
+			uriLog="$1"
+			LINEAS_LOG=$(wc -l "${IN}" | cut -d' ' -f'1')
 
-	        "${SECCIONA}")		# A-COMIENZO TRANSACCION y TimeStamp
-	    	    if [ "${TIMESTAMP_EXTRAIDO}" -eq 0 ]; then
-	    		# Nueva Transaccion
-	    		SIGUIENTE_TRANSACCION=0
-    	        	# Buscamos TimeStamp
-			TIMESTAMPtmp="$(extraerTimeStamp  "${lineaLog}")"
-			if [ -n "${TIMESTAMPtmp}"  ]; then		# Si TIMESTAMPtmp no esta vacia
-    			    timestampUri="${TIMESTAMPtmp}"
-    			    TIMESTAMP_EXTRAIDO=1
-			fi
-		    fi
-		;;
+			#Eliminamos secciones iniciales y finales
+			LINEAS_SECCIONES_INICIALES=10
+			LINEAS_SECCIONES_FINALES=3
+			LINEAS_SIN_SECCIONES_INICIALES=$(tail -$((LINEAS_LOG-LINEAS_SECCIONES_INICIALES)) "${IN}" | wc -l)
+			tail -$((LINEAS_LOG-LINEAS_SECCIONES_INICIALES)) "${IN}" | head -$((LINEAS_SIN_SECCIONES_INICIALES-LINEAS_SECCIONES_FINALES)) > "${DIR_TMP_FAST}/seccionhtmp"
 
-		"${SECCIONB}")		# B-URI
-		    if [ "${URI_EXTRAIDA}" -eq 0 ]; then
-			# Buscamos URI
-			URItmp="$(extraerURI  "${lineaLog}")"
-			if [ -n "${URItmp}"  ]; then		# Si URItmp no esta vacia
-    			    uriLog="${URItmp}"
-    			    URI_EXTRAIDA=1
-			fi
-		    fi
-		;;
+			#Procesamos sección H
+			while IFS= read -r lineaLog ; do
+				IDtmp="$(extraerId  "${lineaLog}")"
+				ID_ANOMALA="0"
 
-		"${SECCIONH}")		# C- PLmin, Score y sid's => Nº reglas
-    		        # A) Buscamos Score Uri en lineaLog. Si se encuentra y es mayor al ultimo encontrado (en la actual seccion H) => Lo guardamos
-					IDtmp="$(extraerId  "${lineaLog}")"
-					ID_ANOMALA="0"
+				#Bug de regla
+				while IFS= read -r line ; do
+					if [ "${IDtmp}" = "${line}"  ]; then
+						ID_ANOMALA="1"
+						PLmintmp="2"		
+					fi					
+				done < ${ID_RULES}
 
-					while read line
-						do
-						if [ "${IDtmp}" = "${line}"  ]; then
-							ID_ANOMALA="1"
-							PLminUri="2"		
-						fi					
-					done < ${ID_RULES}
-
-    				buscarCadena "${listaIDsReglasUri}"  "${IDtmp}"; [ $? -eq "1" ] && ENCONTRADA="1" || ENCONTRADA="0"   # Solo se añade ID si no esta ya (0)
-    				if [ -n "${IDtmp}" -a  -n "${IDtmp##*[!0-9]*}" ]; then		# Si IDtmp no esta vacia y es un numero
-    			    	if [ "${ENCONTRADA}" -eq "0"     -a    "${IDtmp}" -ne "${IDimpresion}" ]; then	# No vale arriba con "-a" (si IDtmp esta vacia => "-ne" da error)
-    			    	    numReglasUri=$((numReglasUri+1))
-    			    	    listaIDsReglasUri="${listaIDsReglasUri} ${IDtmp}"
-    			    	fi
-    				fi
-
- 					PLmintmp="$(extraerPLmin  "${lineaLog}")"
-				    if [ -n "${PLmintmp}" -a  -n "${PLmintmp##*[!0-9]*}" -a "${PLminUri}" != "1" ]; then		# Si PLmintmp no esta vacia y es un numero
-    		    	    if [ -z "${PLminUri}" ]; then					# Si PL; actual vacio => Se guarda el leido
-    		    		PLminUri="${PLmintmp}"
-    		    	    elif [ "${PLmintmp}" -lt "${PLminUri}" ]; then			# Si PL actual no vacio => Solo se guarda si leido es menor
-    		    		PLminUri="${PLmintmp}"
-    		    	    fi
-					elif [ ${INICIO_SECCION} -eq 0 -a -n "${lineaLog}" -a ${ID_ANOMALA} -eq 0 ]; then
-#					elif [ "${INICIO_SECCION}" == "0" -a -n "${lineaLog}" ]; then
-						PLminUri="1"		
+				buscarCadena "${listaIDsReglasUri}"  "${IDtmp}"; [ $? -eq "1" ] && ENCONTRADA="1" || ENCONTRADA="0"   # Solo se añade ID si no esta ya (0)
+				if [ -n "${IDtmp}" -a  -n "${IDtmp##*[!0-9]*}" ]; then		# Si IDtmp no esta vacia y es un numero
+					if [ "${ENCONTRADA}" -eq "0"     -a    "${IDtmp}" -ne "${IDimpresion}" ]; then	# No vale arriba con "-a" (si IDtmp esta vacia => "-ne" da error)
+						numReglasUri=$((numReglasUri+1))
+						listaIDsReglasUri="${listaIDsReglasUri} ${IDtmp}"
 					fi
-    			
-    		        # B) Buscamos Score Uri en lineaLog. Si se encuentra y es mayor al ultimo encontrado (en la actual seccion H) => Lo guardamos
-    		        SCOREtmp="$(extraerScore  "${lineaLog}")"
-    		        if [ -n "${SCOREtmp}" -a  -n "${SCOREtmp##*[!0-9]*}" ]; then		# Si SCOREtmp no esta vacia y es un numero
-    			    [ "${SCOREtmp}" -gt "${scoreUri}" ] && scoreUri="${SCOREtmp}"	# No vale "-a" (si SCOREtmp esta vacia => "-gt" da error)
-    			    #echo "valor dentro de sección B: "
-    			    #echo "${scoreUri}"
-    			fi
-		;;
+				fi
 
-		"${SECCIONZ}")		# Z-FIN Transaccion
-		
-		    # Solo se hace la primera vez que se entra en la seccion
-		    if [ "${SIGUIENTE_TRANSACCION}" -eq 0 ]; then
-			# Imprimir en "fichero.index" la Transaccion (URI) analizada en "fichero.log"
+		 		[ "${ID_ANOMALA}" -eq 0 ] && PLmintmp="$(extraerPLmin  "${lineaLog}")"
+				if [ -n "${PLmintmp}" -a  -n "${PLmintmp##*[!0-9]*}" -a "${PLminUri}" != "1" ]; then		# Si PLmintmp no esta vacia y es un numero
+					if [ -z "${PLminUri}" ]; then					# Si PL; actual vacio => Se guarda el leido
+						PLminUri="${PLmintmp}"
+					elif [ "${PLmintmp}" -lt "${PLminUri}" ]; then			# Si PL actual no vacio => Solo se guarda si leido es menor
+						PLminUri="${PLmintmp}"
+					fi
+
+				#Modsecurity V3 SÍ genera etiqueta PL en nivel 1, a diferencia de V2.
+				elif [ -n "${lineaLog}" -a ${ID_ANOMALA} -eq 0 -a "${LAUNCH_TYPE}" != "offline" ]; then
+					if [ -n "${IDtmp}" -a  -n "${IDtmp##*[!0-9]*}" ]; then
+						[ "${IDtmp}" -ne "${IDimpresion}" ] && PLminUri="1"
+					fi
+				fi
+						
+				# B) Buscamos Score Uri en lineaLog. Si se encuentra y es mayor al ultimo encontrado (en la actual seccion H) => Lo guardamos
+				SCOREtmp="$(extraerScore  "${lineaLog}")"
+				if [ -n "${SCOREtmp}" -a  -n "${SCOREtmp##*[!0-9]*}" ]; then		# Si SCOREtmp no esta vacia y es un numero
+					[ "${SCOREtmp}" -gt "${scoreUri}" ] && scoreUri="${SCOREtmp}"	# No vale "-a" (si SCOREtmp esta vacia => "-gt" da error)
+				fi
+			done < "${DIR_TMP_FAST}/seccionhtmp"
 			imprimirAtaqueIndice  "${timestampUri}"    "${uriLog}"     "${PLminUri}"     "${scoreUri}"    "${numReglasUri}"    "${listaIDsReglasUri}"
-		    
-			# Reseteo contadores
-			TIMESTAMP_EXTRAIDO=0
-			URI_EXTRAIDA=0
-		    
-			# Resetar valores
-			timestampUri=""
-			uriLog=""
-			PLminUri=""   # Menos PL a partir del cual se detecta esta URI como ataque
-			scoreUri="0"
-			numReglasUri="0"
-			listaIDsReglasUri=""
+		fi
+
+	#Modo múltiple
+	else
+		# Se lee el fichero de log  linea a linea
+		#while read lineaLog ; do 
+		while IFS= read -r lineaLog ; do
+
+		    # Identificar la seccion de la Transaccion en la que estamos
+			INICIO_SECCION="0"
+		    SECCION_ACTUALtmp=$(detectarCambioSeccion  "${lineaLog}")
+			if [ -n "${SECCION_ACTUALtmp}" ]; then 
+				SECCION_ACTUAL=${SECCION_ACTUALtmp}
+				INICIO_SECCION="1"
+				if [ "${LAUNCH_MODE}" = "multiple" -a "${SECCION_ACTUALtmp}" = "${SECCIONA}" ]; then
+					printf "\r                                          "
+					printf "\r(%s/%s)"  "${uri_actual}"  "${NTOTAL_ENTRADAS}"
+					uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
+				fi
+			fi
+		
+		case "${SECCION_ACTUAL}" in
+
+			    "${SECCIONA}")		# A-COMIENZO TRANSACCION y TimeStamp
+				    if [ "${TIMESTAMP_EXTRAIDO}" -eq 0 ]; then
+					# Nueva Transaccion
+					SIGUIENTE_TRANSACCION=0
+			        	# Buscamos TimeStamp
+				TIMESTAMPtmp="$(extraerTimeStamp  "${lineaLog}")"
+				if [ -n "${TIMESTAMPtmp}"  ]; then		# Si TIMESTAMPtmp no esta vacia
+					    timestampUri="${TIMESTAMPtmp}"
+					    TIMESTAMP_EXTRAIDO=1
+				fi
+				fi
+			;;
+
+			"${SECCIONB}")		# B-URI
+				if [ "${URI_EXTRAIDA}" -eq 0 ]; then
+				# Buscamos URI
+				URItmp="$(extraerURI  "${lineaLog}")"
+				if [ -n "${URItmp}"  ]; then		# Si URItmp no esta vacia
+					    uriLog="${URItmp}"
+					    URI_EXTRAIDA=1
+				fi
+				fi
+			;;
+
+			"${SECCIONH}")		# C- PLmin, Score y sid's => Nº reglas
+				        # A) Buscamos Score Uri en lineaLog. Si se encuentra y es mayor al ultimo encontrado (en la actual seccion H) => Lo guardamos
+						IDtmp="$(extraerId  "${lineaLog}")"
+						ID_ANOMALA="0"
+
+						#Bug de regla
+						while IFS= read -r line ; do
+							if [ "${IDtmp}" = "${line}"  ]; then
+								ID_ANOMALA="1"
+								PLmintmp="2"		
+							fi					
+						done < ${ID_RULES}
+
+						buscarCadena "${listaIDsReglasUri}"  "${IDtmp}"; [ $? -eq "1" ] && ENCONTRADA="1" || ENCONTRADA="0"   # Solo se añade ID si no esta ya (0)
+						if [ -n "${IDtmp}" -a  -n "${IDtmp##*[!0-9]*}" ]; then		# Si IDtmp no esta vacia y es un numero
+					    	if [ "${ENCONTRADA}" -eq "0"     -a    "${IDtmp}" -ne "${IDimpresion}" ]; then	# No vale arriba con "-a" (si IDtmp esta vacia => "-ne" da error)
+					    	    numReglasUri=$((numReglasUri+1))
+					    	    listaIDsReglasUri="${listaIDsReglasUri} ${IDtmp}"
+					    	fi
+						fi
+
+	 					[ "${ID_ANOMALA}" -eq 0 ] && PLmintmp="$(extraerPLmin  "${lineaLog}")"
+						if [ -n "${PLmintmp}" -a  -n "${PLmintmp##*[!0-9]*}" -a "${PLminUri}" != "1" ]; then		# Si PLmintmp no esta vacia y es un numero
+				    	    if [ -z "${PLminUri}" ]; then					# Si PL; actual vacio => Se guarda el leido
+				    		PLminUri="${PLmintmp}"
+				    	    elif [ "${PLmintmp}" -lt "${PLminUri}" ]; then			# Si PL actual no vacio => Solo se guarda si leido es menor
+				    		PLminUri="${PLmintmp}"
+				    	    fi
+						elif [ -n "${lineaLog}" -a ${ID_ANOMALA} -eq 0 -a "${LAUNCH_TYPE}" != "offline" ]; then
+							if [ -n "${IDtmp}" -a  -n "${IDtmp##*[!0-9]*}" ]; then
+								[ "${IDtmp}" -ne "${IDimpresion}" ] && PLminUri="1"
+							fi
+						fi
+					
+				        # B) Buscamos Score Uri en lineaLog. Si se encuentra y es mayor al ultimo encontrado (en la actual seccion H) => Lo guardamos
+				        SCOREtmp="$(extraerScore  "${lineaLog}")"
+				        if [ -n "${SCOREtmp}" -a  -n "${SCOREtmp##*[!0-9]*}" ]; then		# Si SCOREtmp no esta vacia y es un numero
+					    [ "${SCOREtmp}" -gt "${scoreUri}" ] && scoreUri="${SCOREtmp}"	# No vale "-a" (si SCOREtmp esta vacia => "-gt" da error)
+					    #echo "valor dentro de sección B: "
+					    #echo "${scoreUri}"
+					fi
+			;;
+
+			"${SECCIONZ}")		# Z-FIN Transaccion
 			
-			# Saltar a la siguiente
-			SIGUIENTE_TRANSACCION=1
-		    fi
-		;;
-	esac		# \ "case" Analiza las distintas secciones de cada Transaccion
-    done < "${IN}"		# \ "while" Analiza fichero de log de entrada linea a linea
+				# Solo se hace la primera vez que se entra en la seccion
+				if [ "${SIGUIENTE_TRANSACCION}" -eq 0 ]; then
+				# Imprimir en "fichero.index" la Transaccion (URI) analizada en "fichero.log"
+				imprimirAtaqueIndice  "${timestampUri}"    "${uriLog}"     "${PLminUri}"     "${scoreUri}"    "${numReglasUri}"    "${listaIDsReglasUri}"
+				
+				# Reseteo contadores
+				TIMESTAMP_EXTRAIDO=0
+				URI_EXTRAIDA=0
+				
+				# Resetar valores
+				timestampUri=""
+				uriLog=""
+				PLminUri=""   # Menos PL a partir del cual se detecta esta URI como ataque
+				scoreUri="0"
+				numReglasUri="0"
+				listaIDsReglasUri=""
+				
+				# Saltar a la siguiente
+				SIGUIENTE_TRANSACCION=1
+				fi
+			;;
+		esac		# \ "case" Analiza las distintas secciones de cada Transaccion
+		done < "${IN}"		# \ "while" Analiza fichero de log de entrada linea a linea
+	fi
 }
 #####
 
@@ -418,11 +485,12 @@ generarIndiceDeLog()
 #NTOTAL_ENTRADAS="$(sed '/^$/d' "${IN}" | wc -l | cut -f1 -d " ")"		# No se cuentan las lineas vacias
 NTOTAL_ENTRADAS=$(cat "${IN}" | grep -c ".*${SECCIONA}.*")
 uri_actual=1
+uri_entrada="$2"
 
 # 4) Generar "fichero.index" a partir del log obtenido
 if [ ! -f "${MODLOG}" ]; then
 	echo "No existe el fichero de entrada: ${MODLOG}. Se sale..."
 	exit 1 
 fi
-generarIndiceDeLog
+generarIndiceDeLog "${uri_entrada}"
 #####

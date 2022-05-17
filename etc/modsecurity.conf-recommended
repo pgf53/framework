@@ -19,7 +19,7 @@ SecRequestBodyAccess On
 # Enable XML request body parser.
 # Initiate XML Processor in case of xml content-type
 #
-SecRule REQUEST_HEADERS:Content-Type "text/xml" \
+SecRule REQUEST_HEADERS:Content-Type "(?:application(?:/soap\+|/)|text/)xml" \
      "id:'200000',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML"
 
 # Enable JSON request body parser.
@@ -29,24 +29,33 @@ SecRule REQUEST_HEADERS:Content-Type "text/xml" \
 SecRule REQUEST_HEADERS:Content-Type "application/json" \
      "id:'200001',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON"
 
+# Sample rule to enable JSON request body parser for more subtypes.
+# Uncomment or adapt this rule if you want to engage the JSON
+# Processor for "+json" subtypes
+#
+#SecRule REQUEST_HEADERS:Content-Type "^application/.+[+]json$" \
+#     "id:'200006',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON"
+
 # Maximum request body size we will accept for buffering. If you support
 # file uploads then the value given on the first line has to be as large
 # as the largest file you are willing to accept. The second value refers
 # to the size of data, with files excluded. You want to keep that value as
 # low as practical.
 #
+SecRequestBodyLimit 13107200
+SecRequestBodyNoFilesLimit 131072
 
-# Store up to 128 KB of request body data in memory. When the multipart
-# parser reachers this limit, it will start using your hard disk for
-# storage. That is slow, but unavoidable.
-#
-
-# What do do if the request body size is above our configured limit.
+# What to do if the request body size is above our configured limit.
 # Keep in mind that this setting will automatically be set to ProcessPartial
 # when SecRuleEngine is set to DetectionOnly mode in order to minimize
 # disruptions when initially deploying ModSecurity.
 #
 SecRequestBodyLimitAction Reject
+
+# Maximum parsing depth allowed for JSON objects. You want to keep this
+# value as low as practical.
+#
+SecRequestBodyJsonDepthLimit 512
 
 # Verify that we've correctly processed the request body.
 # As a rule of thumb, when failing to process a request body
@@ -79,8 +88,51 @@ FL %{MULTIPART_FILE_LIMIT_EXCEEDED}'"
 
 # Did we see anything that might be a boundary?
 #
-SecRule MULTIPART_UNMATCHED_BOUNDARY "!@eq 0" \
-"id:'200004',phase:2,t:none,log,deny,msg:'Multipart parser detected a possible unmatched boundary.'"
+# Here is a short description about the ModSecurity Multipart parser: the
+# parser returns with value 0, if all "boundary-like" line matches with
+# the boundary string which given in MIME header. In any other cases it returns
+# with different value, eg. 1 or 2.
+#
+# The RFC 1341 descript the multipart content-type and its syntax must contains
+# only three mandatory lines (above the content):
+# * Content-Type: multipart/mixed; boundary=BOUNDARY_STRING
+# * --BOUNDARY_STRING
+# * --BOUNDARY_STRING--
+#
+# First line indicates, that this is a multipart content, second shows that
+# here starts a part of the multipart content, third shows the end of content.
+#
+# If there are any other lines, which starts with "--", then it should be
+# another boundary id - or not.
+#
+# After 3.0.3, there are two kinds of types of boundary errors: strict and permissive.
+#
+# If multipart content contains the three necessary lines with correct order, but
+# there are one or more lines with "--", then parser returns with value 2 (non-zero).
+#
+# If some of the necessary lines (usually the start or end) misses, or the order
+# is wrong, then parser returns with value 1 (also a non-zero).
+#
+# You can choose, which one is what you need. The example below contains the
+# 'strict' mode, which means if there are any lines with start of "--", then
+# ModSecurity blocked the content. But the next, commented example contains
+# the 'permissive' mode, then you check only if the necessary lines exists in
+# correct order. Whit this, you can enable to upload PEM files (eg "----BEGIN.."),
+# or other text files, which contains eg. HTTP headers.
+#
+# The difference is only the operator - in strict mode (first) the content blocked
+# in case of any non-zero value. In permissive mode (second, commented) the
+# content blocked only if the value is explicit 1. If it 0 or 2, the content will
+# allowed.
+#
+
+#
+# See #1747 and #1924 for further information on the possible values for
+# MULTIPART_UNMATCHED_BOUNDARY.
+#
+SecRule MULTIPART_UNMATCHED_BOUNDARY "@eq 1" \
+    "id:'200004',phase:2,t:none,log,deny,msg:'Multipart parser detected a possible unmatched boundary.'"
+
 
 # PCRE Tuning
 # We want to avoid a potential RegEx DoS condition
@@ -106,7 +158,8 @@ SecRule TX:/^MSC_/ "!@streq 0" \
 # Do keep in mind that enabling this directive does increases both
 # memory consumption and response latency.
 #
-SecResponseBodyAccess On
+# SecResponseBodyAccess On
+SecResponseBodyAccess Off
 
 # Which response MIME types do you want to inspect? You should adjust the
 # configuration below to catch documents but avoid static files
@@ -132,16 +185,14 @@ SecResponseBodyLimitAction ProcessPartial
 # This default setting is chosen due to all systems have /tmp available however, 
 # this is less than ideal. It is recommended that you specify a location that's private.
 #
-#SecTmpDir /tmp/
-#SecTmpDir /home/jedv/work/siva/inspectorlog_v3.5/src/tmp/
-SecTmpDir /opt/IL3.5/0Old/inspectorlog_v3.5/src/tmp/
+SecTmpDir /tmp/
 
 # The location where ModSecurity will keep its persistent data.  This default setting 
 # is chosen due to all systems have /tmp available however, it
 # too should be updated to a place that other users can't access.
 #
-# SecDataDir /tmp/
-SecDataDir /opt/IL3.5/0Old/inspectorlog_v3.5/src/tmp/
+SecDataDir /tmp/
+
 
 # -- File uploads handling configuration -------------------------------------
 
@@ -170,8 +221,7 @@ SecDataDir /opt/IL3.5/0Old/inspectorlog_v3.5/src/tmp/
 # and notice messages from the error log.
 #
 #SecDebugLog /opt/modsecurity/var/log/debug.log
-SecDebugLog /opt/modsecurity-debug/var/log/debug.log
-SecDebugLogLevel 3
+#SecDebugLogLevel 3
 
 
 # -- Audit log configuration -------------------------------------------------
@@ -184,14 +234,14 @@ SecAuditEngine RelevantOnly
 SecAuditLogRelevantStatus "^(?:5|4(?!04))"
 
 # Log everything we know about a transaction.
-#SecAuditLogParts ABIJDEFHZ
-SecAuditLogParts ABHZ
+# SecAuditLogParts ABIJDEFHZ
+SecAuditLogParts ABKZ
+SecDefaultAction "phase:1,log,auditlog,pass"
 
 # Use a single file for logging. This is much easier to look at, but
 # assumes that you will use the audit log only ocassionally.
 #
 SecAuditLogType Serial
-# SecAuditLog /var/log/modsec_audit.log
 SecAuditLog /var/log/modsec_audit.log
 
 # Specify the path for concurrent audit logging.
@@ -217,48 +267,16 @@ SecCookieFormat 0
 # to properly map encoded data to your language. Properly setting
 # these directives helps to reduce false positives and negatives.
 #
-#SecUnicodeMapFile unicode.mapping 20127
+SecUnicodeMapFile unicode.mapping 20127
 
 # Improve the quality of ModSecurity by sharing information about your
 # current ModSecurity version and dependencies versions.
 # The following information will be shared: ModSecurity version,
 # Web Server version, APR version, PCRE version, Lua version, Libxml2
 # version, Anonymous unique id for host.
-SecStatusEngine On
+# SecStatusEngine On
 
-# OWASP CRS RULES
-
-include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/crs-setup.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-901-INITIALIZATION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-903.9001-DRUPAL-EXCLUSION-RULES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-903.9002-WORDPRESS-EXCLUSION-RULES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-903.9003-NEXTCLOUD-EXCLUSION-RULES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-903.9004-DOKUWIKI-EXCLUSION-RULES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-903.9005-CPANEL-EXCLUSION-RULES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-903.9006-XENFORO-EXCLUSION-RULES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-905-COMMON-EXCEPTIONS.conf
-# Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-910-IP-REPUTATION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-911-METHOD-ENFORCEMENT.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-912-DOS-PROTECTION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-913-SCANNER-DETECTION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-921-PROTOCOL-ATTACK.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-931-APPLICATION-ATTACK-RFI.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-933-APPLICATION-ATTACK-PHP.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-934-APPLICATION-ATTACK-NODEJS.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-943-APPLICATION-ATTACK-SESSION-FIXATION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-944-APPLICATION-ATTACK-JAVA.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/REQUEST-949-BLOCKING-EVALUATION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-950-DATA-LEAKAGES.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-951-DATA-LEAKAGES-SQL.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-952-DATA-LEAKAGES-JAVA.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-953-DATA-LEAKAGES-PHP.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-954-DATA-LEAKAGES-IIS.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-959-BLOCKING-EVALUATION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-980-CORRELATION.conf
-Include /opt/IL3.5/0Old/inspectorlog_v3.5/src/etc/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+# Test rules
+SecRule ARGS:param1 "test" "id:1,deny,msg:'this',msg:'is',msg:'a',msg:'test'"
+SecRule REQUEST_URI "test" "id:2,deny,msg:'this',msg:'is',msg:'a',msg:'test'"
+SecRule REQUEST_URI "prueba" "id:3,deny,msg:'this',msg:'is',msg:'a',msg:'test'"

@@ -22,7 +22,7 @@
 
 
 //para que las rutas funcionen, debe evitarse que terminen en '/'
-char main_rule_uri[] = "basic_rules.conf"; // fichero de configuración de ModSecurity V3
+char main_rule_uri[] = "etc/basic_rules.conf"; // fichero de configuración de ModSecurity V3
 
 int main (int argc, char **argv)
 {
