@@ -47,7 +47,7 @@ FILE_IN_EXTENSION=".uri"	#Extensión del fichero de entrada que contiene las uri
 LOG_EXTENSION=".log"	#Extensión del fichero "log" generado por el detector empleado.
 INDEX_EXTENTION=".index"	#Extensión del fichero resumen generado por el "analizador" como resultado de procesar el log.
 INFO_ATTACKS_EXTENSION="-info.attacks"	#Extensión del fichero de ataques más detallado, generado como resultado de procesar el "index" y el fichero de entrada con las uris lanzadas.
-INFO_ATTACKS_HIDE_EXTENSION="-info_hide.attacks"	#Mismo fichero que "-info.attacks" pero eliminando los campos seleccionados por el usuario.
+INFO_ATTACKS_HIDE_EXTENSION="-info-hide.attacks"	#Mismo fichero que "-info.attacks" pero eliminando los campos seleccionados por el usuario.
 ATTACKS_EXTENSION=".attacks"	#Fichero con las uris detectadas como ataque. Formato: Packet/ID	URI
 CLEAN_EXTENSION=".clean"	#Fichero con las uris detectadas como limpias. Formato: Packet/ID	URI
 
