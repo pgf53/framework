@@ -74,7 +74,7 @@ PATH_ACCESS_LOG="/etc/httpd/logs/access_log"
 #AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
 #PATH_AUDIT_LOG="/var/log/httpd/modsec_audit.log"	#MLAv2 (online-local)
 #PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
-PATH_AUDIT_LOG="detectores/MLA/offline/logs/modsec_audit.log"	#MLAv3 (offline)
+PATH_AUDIT_LOG="detectores/ModSecurity/offline/logs/modsec_audit.log"	#MLAv3 (offline)
 
 #IL
 IL_SCRIPT="${DIR_ROOT}/IL.sh"
