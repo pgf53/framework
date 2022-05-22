@@ -23,13 +23,14 @@ RESULTADOS="Resultados/"	#Directorio donde se almacenarán los resultados una ve
 
 #Scripts principales. Scripts cuya ejecución secuencial constituyen la funcionalidad de la herramienta.
 LAUNCHER_SCRIPT="1-Launcher.sh"	#Script que lanzará contra un equipo determinado las uris presentes en el fichero de entrada.
-ANALYZER_SCRIPT="2-analyzer.sh"	#Script de analizador de Log (introducido por el usuario) que generará el resumen de los ataques (".index") como resultado de procesar el log.
+ANALYZER_SCRIPT="2-analyzer.py"	#Script de analizador de Log (introducido por el usuario) que generará el resumen de los ataques (".index") como resultado de procesar el log.
 CLASSIFY_SCRIPT="3-classify.py"	#Script que genera resumen final del análisis. Recibe como entrada el fichero de entrada y el fichero ".index" generado por el ANALYZER_SCRIPT.
 
 #Scripts externos. Scripts integrados en la herramienta que permiten funcionalidades adicionales de esta.
 NO_REPEAT_SCRIPT="remove_repeats.sh"	#Script usado para eliminar uris repetidas del fichero de entrada. En caso de que el formato de entrada sea "extended" solo se evaluará el campo de "uri"
 										#Para catalogar una línea como repetida (se omite el campo ID en la comparación).
 REBUILD_OUTPUT="rebuild_output.sh"	#Script de reconstrucción de la salida
+ANADE_BARRA="anade_barra.sh"	#Asegura que todas las uris de fichero de entrada empiecen por '/'
 #CLOUD_RESULTS="send_results.sh"	#Script usado en cloud para envíar los resultados de manera automática tras finalizar el análisis en equipo local.
 
 #Scripts online-remoto. Scripts utilizados en el tipo de lanzamiento "online-remoto" que permiten la comunicación entre el equipo local y el remoto.
@@ -62,5 +63,23 @@ PACKET="Packet"	#Identificador que precederá al campo "uri" cuando el formato d
 				#Formato Packet [x]	Uri
 ID="ID"	##Identificador que precederá al campo "uri" cuando el formato de entrada es "extended". El id es único para URI. Formato: ID [x]	Uri
 
+
 #LAUNCHER
 SERVERURL_LOCAL="http://localhost"	#URL para lanzamiento local (permite especificar "http" o "https"). Usado en tipo de lanzamiento "online-local" y "offline"
+
+
+#ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
+PATH_ACCESS_LOG="/etc/httpd/logs/access_log"
+
+#AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
+#PATH_AUDIT_LOG="/var/log/httpd/modsec_audit.log"	#MLAv2 (online-local)
+#PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
+PATH_AUDIT_LOG="detectores/MLA/offline/logs/modsec_audit.log"	#MLAv3 (offline)
+
+#IL
+IL_SCRIPT="${DIR_ROOT}/IL.sh"
+IL="0"	#'1' para activar ejecución de IL (desactivada por defecto)
+IL_MODSECURITY="1"	#'1' para activar IL con ModSecurity '0' para desactivarla (opción por defecto)
+IL_NEMESIDA="0"	#'1' para activar IL con Nemesida '0' para desactivarla
+IL_SNORT="0"	#'1' para activar IL con Snort '0' para desactivarla
+

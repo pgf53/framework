@@ -84,12 +84,12 @@ def inserta_attack(line_index, uri, num_uri):
 	new_line_index = elimina_patron(line_index, os.environ["TIME_START"], os.environ["TIME_END"])
 	new_line_index = elimina_patron(new_line_index, os.environ["URI_START"], os.environ["URI_END"])
 	if os.environ["URIS_FORMAT"] == "basic":
-		inicio = os.environ["PACKET"] + " [" + str(num_uri) + "]" + "	" + uri
+		inicio = os.environ["PACKET"] + " [" + str(num_uri) + "]" + "	" + "Uri [" + uri + "]"
 		attack_line = inicio
 	elif os.environ["URIS_FORMAT"] == "extended":
 		pos_identificador = uri.find("	")
 		identificador = uri[:pos_identificador]
-		inicio = os.environ["ID"] + " [" + identificador + "]" + "	" + uri[pos_identificador+1:]
+		inicio = os.environ["ID"] + " [" + identificador + "]" + "	" + "Uri [" + uri[pos_identificador+1:] + "]"
 		attack_line = inicio
 
 	attack_info_line = inicio + "	" + new_line_index
@@ -107,12 +107,12 @@ def inserta_attack(line_index, uri, num_uri):
 def inserta_clean(uri, num_uri):
 	if os.environ["URIS_FORMAT"] == "basic":
 		inicio = os.environ["PACKET"] + " [" + str(num_uri) + "]"
-		clean_line = inicio + "	" + uri
+		clean_line = inicio + "	" + "Uri [" + uri + "]"
 	elif os.environ["URIS_FORMAT"] == "extended":
 		pos_identificador = uri.find("	")
 		identificador = uri[:pos_identificador]
 		inicio = os.environ["ID"] + " [" + identificador + "]"
-		clean_line = inicio + "	" + uri[pos_identificador+1:]
+		clean_line = inicio + "	" + "Uri [" + uri[pos_identificador+1:] + "]"
 
 	#Escribimos en fichero de 'clean'
 	with open(OUT_CLEAN, 'a') as f:

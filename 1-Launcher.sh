@@ -7,7 +7,7 @@
 
 #Recibe como argumento la uri que se desea enviar
 
-URI="$1" #Uri a lanzar
+FILE_URI="$1" #fichero uri a lanzar
 
 case "${LAUNCH_TYPE}" in
 	online-local)
@@ -41,23 +41,15 @@ case "${LAUNCH_TYPE}" in
 		curl "${SERVERURL}${URI}"  >/dev/null  2>&1
 	;;
 	offline)
-		case "${URIS_FORMAT}" in
-			basic)
-				URI=$(printf "%s" "${URI}")
-			;;
-			extended)
-				URI=$(printf "%s" "${URI}" | cut -d'	' -f2)
-			;;
-			*)
-				printf "\nURIS_FORMAT inválido. Las opciones soportadas son \"basic\" o \"extended\". Se sale...\n"
-				exit 1
-			;;
-		esac
-
+			if [ "${URIS_FORMAT}" = "extended" ]; then
+				FILE_NAME=$(basename "${FILE_URI}")
+				 awk '{print $2}' "${FILE_URI}" > "${FILE_NAME}"
+			fi
 		#Necesario para ModsecurityV3
 		LD_LIBRARY_PATH="/usr/local/modsecurity/lib"
 		export LD_LIBRARY_PATH
-		"${DIR_ROOT}/${API_SCRIPT}" "${URI}"	#Script de lanzamiento del usuario. Recibe como argumento la uri a lanzar.
+		[ "${URIS_FORMAT}" = "basic" ] && "${DIR_ROOT}/${API_SCRIPT}" "${FILE_URI}" || "${DIR_ROOT}/${API_SCRIPT}" "${FILE_NAME}"	#Script de lanzamiento del usuario. Recibe como argumento el fichero uri de entrada
+		[ "${URIS_FORMAT}" = "extended" ] && rm -f "${FILE_NAME}"
 	;;
 	*)
 		echo "LAUNCH_TYPE inválido. Las opciones soportadas son: \"online-local\", \"online-remoto\" u \"offline\". Se sale..."

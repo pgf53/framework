@@ -5,13 +5,13 @@
 #y/o la forma en la que se presentarán los resultados.
 
 #MODO DE LANZAMIENTO. "1to1": para lanzamiento y análisis 1 a 1 de las uris. "multiple": para lanzamiento y procesado múltiple de las uris.
-LAUNCH_MODE="1to1"
+LAUNCH_MODE="multiple"
 
 #TIPO DE LANZAMIENTO. "online-local": lanza las uris contra detector ubicado en equipo local. "online-remoto": lanza las uris contra detector ubicado en equipo remoto. "offline": lanza las uris contra 	equipo local, no requiere la presencia de un servidor. 
 LAUNCH_TYPE="offline"
 
 #REPETICIONES EN FICHERO DE ENTRADA. "yes" elimina las uris repetidas en el fichero de entrada y posteriormente recontruye la salida para obtener el mismo resultado que si se lanzase el fichero de entrada original. Se realiza con el propósito de acelerar el anális omitiendo uris repetidas. "no" envía fichero uri de entrada original (con repeticiones si las hubiere).
-NO_REPEAT="yes"
+NO_REPEAT="no"
 
 #SSHPASS. "yes": habilita el uso de sshpass. "no": deshabilita el uso de sshpass (se usará ssh y scp en las conexiones remotas).
 SSH_PASS="yes"
@@ -30,14 +30,13 @@ PASS_CLOUD="root"
 
 #FORMATO DE FICHERO URI DE ENTRADA.	"basic": URI
 									#"extended": ID	URI
-URIS_FORMAT="basic"
+URIS_FORMAT="extended"
 
 #COLUMNAS OPCIONALES. #Columnas opcionales del fichero de resultados "*-info.attacks". Se generará un nuevo fichero "*-info_hide.attacks" que eliminará estos campos de los resultados.
 OPTIONAL_COLUMNS="3 4"
 
 #HABILITAR/DESHABILITAR COLUMNA. "yes" se ocultan las columnas opcionales. "no" se muestran todas las columnas de fichero "*-info.attacks"
 HIDE_COLUMNS="yes"
-
 
 
 ############LAUNCHER#########
@@ -48,18 +47,6 @@ SERVERURL="http://lt05"
 
 #Utilizado en tipo "offline". Ruta del script con la API de lanzamiento introducido por el usuario.
 API_SCRIPT="MLAv3_launcher.out"
-
-
-
-############DETECTOR_LOG#########
-#En este apartado se configurarán las rutas de los ficheros de log generados por el detector.
-
-#ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
-PATH_ACCESS_LOG="/etc/httpd/logs/access_log"
-
-#AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
-#PATH_AUDIT_LOG="/var/log/httpd/modsec_audit.log"	#MLAv2 (online-local)
-PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
 
 
 
