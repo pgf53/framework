@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#Introducimos ruta raíz de la herramienta
+DIR_ROOT=$(pwd)
+sed -i "s#DIR_ROOT=#DIR_ROOT=${DIR_ROOT}#g" "framework_config_interna.sh"
+
 #### Cargar configuracion
 . ./framework_config.sh
 . ./framework_config_interna.sh
@@ -9,14 +13,14 @@
 imprimirCabecera ()
 {
 
-OUT_ATTACKS_INFO="$1"
-OUT_ATTACKS_INFO_HIDE="$2"
-OUT_CLEAN="$3"
-OUT_ATTACKS="$4"
+	OUT_ATTACKS_INFO="$1"
+	OUT_ATTACKS_INFO_HIDE="$2"
+	OUT_CLEAN="$3"
+	OUT_ATTACKS="$4"
 
 	#si "HIDE_COLUMMNS" = "yes" eliminamos columnas opcionales
 	COLUMNS=$(printf "%s %s" ${OPTIONAL_COLUMNS} | tr " " ",")
-	if [ "${HIDE_COLUMNS}" = "yes" ]; then
+	if [ -f "${OUT_ATTACKS_INFO}" -a "${HIDE_COLUMNS}" = "yes" ]; then
 		cut --complement -d'	' -f${COLUMNS} "${OUT_ATTACKS_INFO}" >> "${OUT_ATTACKS_INFO_HIDE}"
 	fi
 
@@ -36,15 +40,20 @@ OUT_ATTACKS="$4"
 	IMPRIMIR1="---------------------- Statistics of URIs analyzed------------------------"
 	IMPRIMIR2="[${uris_totales}] input, [${num_clean}] clean, [${num_ataques}] attacks"
 	IMPRIMIR3="--------------------------- Analysis results -----------------------------"
-	sed -i "1i$IMPRIMIR3"  "${OUT_ATTACKS_INFO}"
-	sed -i "1i$IMPRIMIR2"  "${OUT_ATTACKS_INFO}"
-	sed -i "1i$IMPRIMIR1"  "${OUT_ATTACKS_INFO}"
 
-	#Imprimimos cabecera en fichero "*-info_hide.attacks" si existe
-	if [ -f "${OUT_ATTACKS_INFO_HIDE}" ]; then
-		sed -i "1i$IMPRIMIR3"  "${OUT_ATTACKS_INFO_HIDE}"
-		sed -i "1i$IMPRIMIR2"  "${OUT_ATTACKS_INFO_HIDE}"
-		sed -i "1i$IMPRIMIR1"  "${OUT_ATTACKS_INFO_HIDE}"
+	if [ ! -f "${OUT_ATTACKS_INFO}" ]; then 
+		printf "%s\n%s\n%s" "${IMPRIMIR1}" "${IMPRIMIR2}" "${IMPRIMIR3}" >> "${OUT_ATTACKS_INFO}"
+	else
+		sed -i "1i$IMPRIMIR3"  "${OUT_ATTACKS_INFO}"
+		sed -i "1i$IMPRIMIR2"  "${OUT_ATTACKS_INFO}"
+		sed -i "1i$IMPRIMIR1"  "${OUT_ATTACKS_INFO}"
+
+		#Imprimimos cabecera en fichero "*-info_hide.attacks" si existe
+		if [ -f "${OUT_ATTACKS_INFO_HIDE}" ]; then
+			sed -i "1i$IMPRIMIR3"  "${OUT_ATTACKS_INFO_HIDE}"
+			sed -i "1i$IMPRIMIR2"  "${OUT_ATTACKS_INFO_HIDE}"
+			sed -i "1i$IMPRIMIR1"  "${OUT_ATTACKS_INFO_HIDE}"
+		fi
 	fi
 }
 
@@ -87,7 +96,7 @@ set -a; source "${DIR_ROOT}/framework_config.sh"; set +a
 set -a; source "${DIR_ROOT}/framework_config_interna.sh"; set +a
 
 #Nos aseguramos de que todas las uris de fichero de entrada empiecen por caracter '/'
-. "${ANADE_BARRA}" "${DIR_ROOT}/${DIRIN_URI}/"
+./"${ANADE_BARRA}" "${DIR_ROOT}/${DIRIN_URI}/"
 
 #Comprobamos ejecución IL
 
@@ -100,8 +109,8 @@ if [ "${IL}" -ne 1 ]; then
 			exit 1
 		fi
 
+		FILENAME="$(basename ${i%.*})${FILE_IN_EXTENSION}"
 		if [ "${NO_REPEAT}" = "yes" ]; then
-			FILENAME="$(basename ${i%.*})${FILE_IN_EXTENSION}"
 			cp "${i}" "${DIR_TMP}/${FILENAME}"
 			"${DIR_ROOT}/${NO_REPEAT_SCRIPT}" "${i}" "${URIS_FORMAT}" ${DIR_ROOT}	#Crea nuevo fichero eliminando uris repetidas
 		fi
@@ -114,7 +123,7 @@ if [ "${IL}" -ne 1 ]; then
 		OUT_CLEAN="${DIR_ROOT}/${DIROUT_CLEAN}/$(basename ${i%.*})${CLEAN_EXTENSION}"
 		OUT_ATTACKS="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${ATTACKS_EXTENSION}"
 		OUT_LOG="${DIR_ROOT}/${PATH_LOG}/$(basename ${i%.*})${LOG_EXTENSION}"	#fichero donde queda regisrado el audit_log
-		OUT_LOG_TMP="${DIR_TMP_FAST}/$(basename ${i%.*})${LOG_EXTENSION}"	#fichero donde queda registrado el log relativo a una uri (temporal)
+		OUT_LOG_TMP="${DIR_TMP_FAST}/${NOMBRE_RAIZ}_$(basename ${i%.*})${LOG_EXTENSION}"	#fichero donde queda registrado el log relativo a una uri (temporal)
 		OUT_INDEX="${DIR_ROOT}/${DIROUT_INDEX}/$(basename ${i%.*})${INDEX_EXTENTION}"	#fichero de index generado
 		uris_totales=$(wc -l "${i}" | cut -d' ' -f1)
 
@@ -148,8 +157,6 @@ if [ "${IL}" -ne 1 ]; then
 					do
 						#Fase 1: Lanzamiento
 						#Creamos fichero en memoria de una sola uri. El nombre estará creado a partir de directorio de la herramienta de forma que sea único
-						NOMBRE_RAIZ=$(pwd)
-						NOMBRE_RAIZ=$(basename "${NOMBRE_RAIZ}")
 						printf "%s\n" "${input}" > "${DIR_TMP_FAST}/1to1_${NOMBRE_RAIZ}${FILE_IN_EXTENSION}"
 						if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "online-remoto" ]; then 
 							rm -f "${OUT_LOG_TMP}" 1>/dev/null 2>&1	#eliminamos fichero de log temporal de uri anterior
@@ -158,14 +165,11 @@ if [ "${IL}" -ne 1 ]; then
 							rm -f "${OUT_LOG_TMP}"	#Borramos fichero de log de uri anterior
 						fi
 						"${DIR_ROOT}/${LAUNCHER_SCRIPT}" "${DIR_TMP_FAST}/1to1_${NOMBRE_RAIZ}${FILE_IN_EXTENSION}"	#Realizamos el lanzamiento de la uri.
-						[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de lanzamiento.
-
 
 						if [ "${LAUNCH_TYPE}" = "offline" ]; then
 							cat "${PATH_AUDIT_LOG}" > "${OUT_LOG_TMP}"
 							cat "${PATH_AUDIT_LOG}" >> "${OUT_LOG}"
 						fi
-						
 
 						if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "online-remoto" ]; then 
 							while true
@@ -185,14 +189,13 @@ if [ "${IL}" -ne 1 ]; then
 						fi
 
 						"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG_TMP}" "${uri_entrada}"
-						[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de análisis.
 
 						#Fase 3 Clasificador
 		#			./3-classify.sh "${input}" "${OUT_INDEX}" "${OUT_ACCESS}" "${uri_actual}"	#el fichero de access solo es necesario para la modalidad "online"  ${PATH_ACCESS_LOG} ${OUT_ACCESS}
 					#pasamos última línea de fichero .index
-					[ -f "${OUT_INDEX}" ] && last_line_index=$(tail -1 "${OUT_INDEX}") || last_line_index="uri_limpia"
+					mv "${DIROUT_INDEX}/${NOMBRE_RAIZ}_$(basename ${i%.*})${INDEX_EXTENTION}" "${OUT_INDEX}"
+					[ -s "${OUT_INDEX}" ] && last_line_index=$(tail -1 "${OUT_INDEX}") || last_line_index="uri_limpia"
 					"${DIR_ROOT}/${CLASSIFY_SCRIPT}" "${i}" "${uris_totales}" "${last_line_index}" "${input}" "${uri_actual}"
-					[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de clasificación.
 
 						printf "\r                                          "
 						printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}" 
@@ -236,7 +239,6 @@ if [ "${IL}" -ne 1 ]; then
 						while IFS= read -r input	#Si el formato es "basico" "input=uri lanzada".
 						do
 							"${DIR_ROOT}/${LAUNCHER_SCRIPT}" "${input}"	#Realizamos el lanzamiento del fichero de uris.
-							[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de lanzamiento.
 							printf "\r                                          "
 							printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
 							uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
@@ -266,7 +268,6 @@ if [ "${IL}" -ne 1 ]; then
 					#Fase 2: Análisis
 					printf "\nIniciando análisis...\n\n"
 					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG}"
-					[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de análisis.
 					printf "\n\n"
 					
 					#Salidas Fase 2
@@ -276,7 +277,6 @@ if [ "${IL}" -ne 1 ]; then
 					printf "\nIniciando clasificador...\n\n"
 					#./3-classify.sh "${i}" "${OUT_INDEX}" "${OUT_ACCESS}"	#el fichero de access solo es necesario para la modalidad "online"
 					"${DIR_ROOT}/${CLASSIFY_SCRIPT}" "${i}" "${uris_totales}" "${OUT_INDEX}"
-					[ $? -eq 1 ] && exit 1	#Se sale si hay algún problema en la fase de clasificación.
 					imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
 			;;
 			*)

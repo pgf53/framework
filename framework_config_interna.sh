@@ -69,12 +69,19 @@ SERVERURL_LOCAL="http://localhost"	#URL para lanzamiento local (permite especifi
 
 
 #ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
-PATH_ACCESS_LOG="/etc/httpd/logs/access_log"
+PATH_ACCESS_LOG="/etc/httpd/logs/access_log" #CAMBIAR POR RUTA RELATIVA!!
 
 #AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
 #PATH_AUDIT_LOG="/var/log/httpd/modsec_audit.log"	#MLAv2 (online-local)
 #PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
 PATH_AUDIT_LOG="detectores/ModSecurity/offline/logs/modsec_audit.log"	#MLAv3 (offline)
+
+#Prefijo utilizado en la creación de nombres de ficheros en memoria para evitar duplicidades
+NOMBRE_RAIZ=$(pwd)
+NOMBRE_RAIZ=$(basename "${NOMBRE_RAIZ}")
+
+#BYOBU_SESSION. Nombre de la sesión byobu en la que trabajaremos. IMPORTANTE: este nombre también se usa en la sesión byobu creada en lanzamiento de tipo "online_local"
+BYOBU_SESSION="${NOMBRE_RAIZ}_modo_online"
 
 #IL
 IL_SCRIPT="${DIR_ROOT}/IL.sh"

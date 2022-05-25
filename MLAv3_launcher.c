@@ -25,6 +25,12 @@
 //para que las rutas funcionen, debe evitarse que terminen en '/'
 char main_rule_uri[] = "detectores/ModSecurity/offline/basic_rules.conf"; // fichero de configuración de ModSecurity V3
 
+void cb(void *log, const void *data)
+{
+    // swallow it
+    return;
+}
+
 int main (int argc, char **argv)
 {
 
@@ -79,6 +85,7 @@ int main (int argc, char **argv)
     }
 
     msc_rules_dump(rules);
+	msc_set_log_cb(modsec, cb);
 
 	while (fscanf(in_file, "%[^\n] ", file_contents) != EOF) {
 		transaction = msc_new_transaction(modsec, rules, NULL);
@@ -86,19 +93,26 @@ int main (int argc, char **argv)
 // phase 0
     msc_process_connection(transaction, "127.0.0.1", 12345, "127.0.0.1", 80);
 // es necesario establecer la cabecera
+	//msc_add_request_header(transaction, (unsigned char *)"Host", (unsigned char *)"localhost");
+	//msc_add_request_header(transaction, (unsigned char *)"User-Agent", (unsigned char *)"msc_process_uri");
+	//msc_add_request_header(transaction, (unsigned char *)"Accept", (unsigned char *)"*/*");
 	msc_add_request_header(transaction, (unsigned char *)"Host", (unsigned char *)"localhost");
-	msc_add_request_header(transaction, (unsigned char *)"User-Agent", (unsigned char *)"msc_process_uri");
-	msc_add_request_header(transaction, (unsigned char *)"Accept", (unsigned char *)"*/*");
+	msc_add_request_header(transaction, (unsigned char *)"User-Agent", (unsigned char *)"Apache/2.2.15 (Red Hat) (internal dummy connection)");
+	msc_add_request_header(transaction, (unsigned char *)"Accept", (unsigned char *)"Yes");
+	msc_append_request_body(transaction, (unsigned char *)"", 0);
 //    msc_process_uri(transaction, uri,"GET", "1.1");
 	msc_process_uri(transaction, file_contents, "GET", "1.1");
 // phase 1 
     msc_process_request_headers(transaction);
 // phase 2
     msc_process_request_body(transaction);
+/*
 // phase 3
     msc_process_response_headers(transaction, 200, "HTTP 1.3");
 // phase 4
     msc_process_response_body(transaction);
+*/
+
 // phase 5
     msc_process_logging(transaction);
 

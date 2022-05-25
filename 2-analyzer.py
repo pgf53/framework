@@ -17,8 +17,6 @@ def find_all(a_str, sub):
 
 
 
-
-
 file_log = sys.argv[1]	#fichero de log a procesar
 
 #Creamos el nombre del fichero de index
@@ -63,6 +61,7 @@ PATRONSCOREfin= ')"]'
 ids_registrados = []
 score = 0
 pl_min = 4
+
 
 #Leemos fichero de log
 if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:

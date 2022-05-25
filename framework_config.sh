@@ -20,17 +20,17 @@ PASS="root"
 
 #CLOUD. configuración para cuando se ejecuta la herramienta con Cloud.
 #EJECUCIÓN EN CLOUD. "yes" prepara directorio con los resultados del análisis y los transfiere al equipo origen. "no" Los archivos de resultados son almacenados en equipo local
-CLOUD_EXECUTION="yes"
+#CLOUD_EXECUTION="yes"
 #EQUIPO ORIGEN CLOUD. Dirección ip del equipo emisor de la herramienta en cloud. Se usa para transferir los resulados automáticamente una vez finaliza el análisis.
 #SOURCE_DEVICE="lt04"
 
 #Usuario y contraseña para conectarnos a equipo origen de cloud. Usado en SSHPASS.
-USER_CLOUD="root"
-PASS_CLOUD="root"
+#USER_CLOUD="root"
+#PASS_CLOUD="root"
 
 #FORMATO DE FICHERO URI DE ENTRADA.	"basic": URI
 									#"extended": ID	URI
-URIS_FORMAT="extended"
+URIS_FORMAT="basic"
 
 #COLUMNAS OPCIONALES. #Columnas opcionales del fichero de resultados "*-info.attacks". Se generará un nuevo fichero "*-info_hide.attacks" que eliminará estos campos de los resultados.
 OPTIONAL_COLUMNS="3 4"
@@ -41,9 +41,6 @@ HIDE_COLUMNS="yes"
 
 ############LAUNCHER#########
 #En este apartado se configurarán las variables relativas al lanzador.
-
-#IP del servidor contra la que se harán los lanzamientos. Necesario para tipo de lanzamiento "online-remoto".
-SERVERURL="http://lt05"
 
 #Utilizado en tipo "offline". Ruta del script con la API de lanzamiento introducido por el usuario.
 API_SCRIPT="MLAv3_launcher.out"
@@ -62,5 +59,5 @@ IP_REMOTE="172.16.17.2"
 #USUARIO_REMOTO. Usuario con el que accederemos a equipo remoto
 USER_REMOTE="root"
 
-#BYOBU_SESSION. Nombre de la sesión byobu en la que trabajaremos. IMPORTANTE: este nombre también se usa en la sesión byobu creada en lanzamiento de tipo "online_local"
-BYOBU_SESSION="pedro"
+#IP del servidor contra la que se harán los lanzamientos. Necesario para tipo de lanzamiento "online-remoto".
+SERVERURL="http://lt05"

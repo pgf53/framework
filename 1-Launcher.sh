@@ -48,7 +48,7 @@ case "${LAUNCH_TYPE}" in
 		#Necesario para ModsecurityV3
 		LD_LIBRARY_PATH="/usr/local/modsecurity/lib"
 		export LD_LIBRARY_PATH
-		[ "${URIS_FORMAT}" = "basic" ] && "${DIR_ROOT}/${API_SCRIPT}" "${FILE_URI}" || "${DIR_ROOT}/${API_SCRIPT}" "${FILE_NAME}"	#Script de lanzamiento del usuario. Recibe como argumento el fichero uri de entrada
+		[ "${URIS_FORMAT}" = "basic" ] && "${DIR_ROOT}/${API_SCRIPT}" "${FILE_URI}" > /dev/null || "${DIR_ROOT}/${API_SCRIPT}" "${FILE_NAME}" > /dev/null	#Script de lanzamiento del usuario. Recibe como argumento el fichero uri de entrada
 		[ "${URIS_FORMAT}" = "extended" ] && rm -f "${FILE_NAME}"
 	;;
 	*)
