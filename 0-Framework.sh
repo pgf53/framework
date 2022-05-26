@@ -297,20 +297,15 @@ if [ "${IL}" -ne 1 ]; then
 			rm -f "${DIR_TMP}/${FILENAME}"
 		fi
 		
-		#Una vez hemos terminado de procesar un fichero lo anotamos en el directorio de 'entradas_finalizadas'
-		touch "entradas_finalizadas/${FILENAME}"
 		#Copiamos resultados a directorio de resultados
 		cp -rf "${PATH_LOG}" "${RESULTADOS}"
 		cp -rf "${DIROUT_INDEX}" "${RESULTADOS}"
 		cp -rf "${DIROUT_ATTACKS}" "${RESULTADOS}"
 		cp -rf "${DIROUT_CLEAN}" "${RESULTADOS}"
 
-		#Si estamos ejecutando la herramienta mediante Cloud
-		#if [ ${CLOUD_EXECUTION} = "yes" ]; then
-			#Enviamos los resultados obtenidos tras finalizar el análisis a equipo origen
-			#parsed_file_name=$(basename "${i}" "${FILE_IN_EXTENSION}")
-			#"${DIR_ROOT}/${CLOUD_RESULTS}" "${parsed_file_name}"
-		#fi
+		#Una vez hemos terminado de procesar un fichero lo anotamos en el directorio de 'entradas_finalizadas'
+		touch "entradas_finalizadas/${FILENAME}"
+
 	done
 
 	echo "no sale por error"
