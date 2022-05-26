@@ -2,7 +2,7 @@
 
 #Introducimos ruta raíz de la herramienta
 DIR_ROOT=$(pwd)
-sed -i "s#DIR_ROOT=#DIR_ROOT=${DIR_ROOT}#g" "framework_config_interna.sh"
+sed -i "s#DIR_ROOT=.*#DIR_ROOT=\"${DIR_ROOT}\"#g" "framework_config_interna.sh"
 
 #### Cargar configuracion
 . ./framework_config.sh

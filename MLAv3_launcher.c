@@ -23,7 +23,7 @@
 
 
 //para que las rutas funcionen, debe evitarse que terminen en '/'
-char main_rule_uri[] = "detectores/ModSecurity/offline/basic_rules.conf"; // fichero de configuración de ModSecurity V3
+char main_rule_uri[] = "detectores/mod_security_offline/basic_rules.conf"; // fichero de configuración de ModSecurity V3
 
 void cb(void *log, const void *data)
 {

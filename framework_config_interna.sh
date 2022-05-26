@@ -4,8 +4,7 @@
 
 #DIRECTORIOS. Directorios necesarios para el funcionamiento de la herramienta.
 
-DIR_ROOT="/opt/framework"	#Directorio raíz de la herramienta
-#DIR_ROOT="/opt/nuevo_Cloud/Tareas/framework/entrada/software_framework"
+DIR_ROOT="/opt/framework"
 DIR_REMOTE="/opt"	#Usado en online-remoto. Directorio de trabajo de equipo remoto donde se desplegarán los scripts de monitorización
 DIR_TMP="/tmp"	#Fichero de trabajo temporal. Usado en tiempo de ejecución para almacenar temporalmente ciertos resultados.
 DIR_TMP_FAST="/dev/shm"	#Igual que DIR_TMP pero usado en el almacenamiento de resultados más pequeños. El almacenarlos en memoria permite una mayor eficiencia en la ejecución.
@@ -74,7 +73,7 @@ PATH_ACCESS_LOG="/etc/httpd/logs/access_log" #CAMBIAR POR RUTA RELATIVA!!
 #AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
 #PATH_AUDIT_LOG="/var/log/httpd/modsec_audit.log"	#MLAv2 (online-local)
 #PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
-PATH_AUDIT_LOG="detectores/ModSecurity/offline/logs/modsec_audit.log"	#MLAv3 (offline)
+PATH_AUDIT_LOG="detectores/mod_security_offline/logs/modsec_audit.log"	#MLAv3 (offline)
 
 #Prefijo utilizado en la creación de nombres de ficheros en memoria para evitar duplicidades
 NOMBRE_RAIZ=$(pwd)
