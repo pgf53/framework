@@ -1,0 +1,22 @@
+[Thu May 26 19:48:44.695199 2022] [suexec:notice] [pid 11384] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Thu May 26 19:48:44.705741 2022] [:notice] [pid 11384] ModSecurity for Apache/2.9.2 (http://www.modsecurity.org/) configured.
+[Thu May 26 19:48:44.705750 2022] [:notice] [pid 11384] ModSecurity: APR compiled version="1.4.8"; loaded version="1.4.8"
+[Thu May 26 19:48:44.705752 2022] [:notice] [pid 11384] ModSecurity: PCRE compiled version="8.32 "; loaded version="8.32 2012-11-30"
+[Thu May 26 19:48:44.705754 2022] [:notice] [pid 11384] ModSecurity: LUA compiled version="Lua 5.1"
+[Thu May 26 19:48:44.705755 2022] [:notice] [pid 11384] ModSecurity: LIBXML compiled version="2.9.1"
+[Thu May 26 19:48:44.705756 2022] [:notice] [pid 11384] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+[Thu May 26 19:48:44.772332 2022] [lbmethod_heartbeat:notice] [pid 11385] AH02282: No slotmem from mod_heartmonitor
+[Thu May 26 19:48:44.846430 2022] [mpm_prefork:notice] [pid 11385] AH00163: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.4.16 configured -- resuming normal operations
+[Thu May 26 19:48:44.846950 2022] [core:notice] [pid 11385] AH00094: Command line: 'httpd -f conf/httpd1.conf'
+[Thu May 26 19:48:49.353871 2022] [mpm_prefork:notice] [pid 11385] AH00169: caught SIGTERM, shutting down
+[Thu May 26 19:54:26.559495 2022] [suexec:notice] [pid 11395] AH01232: suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+[Thu May 26 19:54:26.560140 2022] [:notice] [pid 11395] ModSecurity for Apache/2.9.2 (http://www.modsecurity.org/) configured.
+[Thu May 26 19:54:26.560147 2022] [:notice] [pid 11395] ModSecurity: APR compiled version="1.4.8"; loaded version="1.4.8"
+[Thu May 26 19:54:26.560149 2022] [:notice] [pid 11395] ModSecurity: PCRE compiled version="8.32 "; loaded version="8.32 2012-11-30"
+[Thu May 26 19:54:26.560150 2022] [:notice] [pid 11395] ModSecurity: LUA compiled version="Lua 5.1"
+[Thu May 26 19:54:26.560151 2022] [:notice] [pid 11395] ModSecurity: LIBXML compiled version="2.9.1"
+[Thu May 26 19:54:26.560153 2022] [:notice] [pid 11395] ModSecurity: Status engine is currently disabled, enable it by set SecStatusEngine to On.
+[Thu May 26 19:54:26.607717 2022] [lbmethod_heartbeat:notice] [pid 11396] AH02282: No slotmem from mod_heartmonitor
+[Thu May 26 19:54:26.616712 2022] [mpm_prefork:notice] [pid 11396] AH00163: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.4.16 configured -- resuming normal operations
+[Thu May 26 19:54:26.616735 2022] [core:notice] [pid 11396] AH00094: Command line: 'httpd -f conf/httpd1.conf'
+[Thu May 26 19:54:39.758101 2022] [mpm_prefork:notice] [pid 11396] AH00169: caught SIGTERM, shutting down

@@ -52,11 +52,11 @@ PATRONURIfin = 'HTTP'
 
 # Score Reglas
 #ModSecurityV2
-#PATRONSCOREinicio='[msg "Incoming Anomaly Score: '
-#PATRONSCOREfin='"]'
+PATRONSCOREinicio='[msg "Incoming Anomaly Score: '
+PATRONSCOREfin='"]'
 #ModSecurityV3
-PATRONSCOREinicio= '[msg "Inbound Anomaly Score Exceeded (Total Score: '
-PATRONSCOREfin= ')"]'
+#PATRONSCOREinicio= '[msg "Inbound Anomaly Score Exceeded (Total Score: '
+#PATRONSCOREfin= ')"]'
 
 ids_registrados = []
 score = 0
@@ -99,7 +99,7 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 						if inicio_id < id_superior:
 							if int(linea_log[inicio_id+len(PATRONIDinicio):id_superior]) != 1000:
 								ids_registrados.append(linea_log[inicio_id+len(PATRONIDinicio):id_superior])
-								break
+							break
 				inicio_score = linea_log.find(PATRONSCOREinicio)
 				fin_score = list(find_all(linea_log, PATRONSCOREfin))
 				if inicio_score != -1 and fin_score != []:

@@ -1,0 +1,3 @@
+[Sun May 01 03:25:02.185322 2022] [lbmethod_heartbeat:notice] [pid 4742] AH02282: No slotmem from mod_heartmonitor
+[Sun May 01 03:25:02.228064 2022] [mpm_prefork:notice] [pid 4742] AH00163: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.4.16 configured -- resuming normal operations
+[Sun May 01 03:25:02.228074 2022] [core:notice] [pid 4742] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'

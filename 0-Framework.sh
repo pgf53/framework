@@ -127,6 +127,9 @@ if [ "${IL}" -ne 1 ]; then
 		OUT_INDEX="${DIR_ROOT}/${DIROUT_INDEX}/$(basename ${i%.*})${INDEX_EXTENTION}"	#fichero de index generado
 		uris_totales=$(wc -l "${i}" | cut -d' ' -f1)
 
+		#Configuramos instancia de apache y arrancamos servidor
+		[ "${LAUNCH_TYPE}" = "online-local" ] && "${CONFIGURA_INSTANCIA_APACHE}"
+
 		#################################1-1#############################
 		case "${LAUNCH_MODE}" in
 			1to1)
@@ -233,19 +236,7 @@ if [ "${IL}" -ne 1 ]; then
 
 					#Fase 1: Lanzamiento
 					printf "\nIniciando lanzamiento...\n\n"
-					if [ "${LAUNCH_TYPE}" = "offline" ]; then
-						"${DIR_ROOT}/${LAUNCHER_SCRIPT}" "${i}"
-					else
-						while IFS= read -r input	#Si el formato es "basico" "input=uri lanzada".
-						do
-							"${DIR_ROOT}/${LAUNCHER_SCRIPT}" "${input}"	#Realizamos el lanzamiento del fichero de uris.
-							printf "\r                                          "
-							printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
-							uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
-						done < "${i}"
-					fi
-
-					printf "\n"
+					"${DIR_ROOT}/${LAUNCHER_SCRIPT}" "${i}"
 					if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "offline" ]; then
 						cp "${PATH_AUDIT_LOG}" "${OUT_LOG}"	#Una vez hemos finalizado el lanzamiento, almacenamos el log generado
 					elif [ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "yes" ]; then
@@ -269,9 +260,6 @@ if [ "${IL}" -ne 1 ]; then
 					printf "\nIniciando análisis...\n\n"
 					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG}"
 					printf "\n\n"
-					
-					#Salidas Fase 2
-					#OUT_INDEX="${DIR_ROOT}/${DIROUT_INDEX}/$(basename ${i%.*}).index"	#fichero de index generado
 
 					#Fase 3 Clasificador
 					printf "\nIniciando clasificador...\n\n"
@@ -307,9 +295,8 @@ if [ "${IL}" -ne 1 ]; then
 		touch "entradas_finalizadas/${FILENAME}"
 
 	done
-
-	echo "no sale por error"
-
+	#Tras procesar ficheros detenemos la instancia de apache
+	[ "${LAUNCH_TYPE}" = "online-local" ] && httpd -f "${FILE_CONFIG_APACHE}" -k stop
 else
 	. "${IL_SCRIPT}"
 fi

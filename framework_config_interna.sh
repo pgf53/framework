@@ -13,10 +13,15 @@ PATH_LOG="02-Log"	#Directorio con los Logs de los ficheros analizados.
 DIROUT_INDEX="03-Index"	#Directorio donde se almacena el fichero resumen del procesado del log.
 DIROUT_ATTACKS="04A-Attacks"	#Directorio donde se almacenan los ficheros con las uris detectadas como ataque.
 DIROUT_CLEAN="04B-Clean"	#Directorio donde se almacenan los ficheros con las uris detectadas como limpias.
+DIR_DETECTORES="${DIR_ROOT}/detectores/"	#Directorio que contiene los detectores integrados por la herramienta framework
+DIR_FRAMEWORK_LOG="${DIR_ROOT}/framework_log/"	#Directorio con información sobre la ejecución de framework e.g. puerto de escucha de apache
 #Directorios para Cloud
 RESULTADOS="Resultados/"	#Directorio donde se almacenarán los resultados una vez finalizado el análisis de un fichero.
 #DIR_CLOUD="/opt/06-Cloud_Tareas/framework/02-Recoger_Tarea/Resultados"	#Directorio Cloud de resultados
 #RESULTADOS_COMPRIMIDOS="${DIR_CLOUD}/Comprimidos"	#Directorio en Cloud donde se envían los resultados
+
+#FICHERO DE LOG DE FRAMEWORK
+FILE_FRAMEWORK_LOG="${DIR_FRAMEWORK_LOG}framework.log"
 
 #SCRIPTS
 
@@ -30,7 +35,7 @@ NO_REPEAT_SCRIPT="remove_repeats.sh"	#Script usado para eliminar uris repetidas 
 										#Para catalogar una línea como repetida (se omite el campo ID en la comparación).
 REBUILD_OUTPUT="rebuild_output.sh"	#Script de reconstrucción de la salida
 ANADE_BARRA="anade_barra.sh"	#Asegura que todas las uris de fichero de entrada empiecen por '/'
-#CLOUD_RESULTS="send_results.sh"	#Script usado en cloud para envíar los resultados de manera automática tras finalizar el análisis en equipo local.
+CONFIGURA_INSTANCIA_APACHE="configura_instancia_apache.sh"	#Script utilizado para configurar servidor apache
 
 #Scripts online-remoto. Scripts utilizados en el tipo de lanzamiento "online-remoto" que permiten la comunicación entre el equipo local y el remoto.
 REMOTE_SCRIPT="remoto.sh"	#Utilizado en LAUNCH_MODE=1to1. Script desplegado en equipo remoto que iniciará una sesión byobu y ejecutará REMOTE_MONITORIZATION_SCRIPT.
@@ -68,12 +73,12 @@ SERVERURL_LOCAL="http://localhost"	#URL para lanzamiento local (permite especifi
 
 
 #ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
-PATH_ACCESS_LOG="/etc/httpd/logs/access_log" #CAMBIAR POR RUTA RELATIVA!!
+PATH_ACCESS_LOG="detectores/apache_online_local/logs/access_log"
 
 #AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
-#PATH_AUDIT_LOG="/var/log/httpd/modsec_audit.log"	#MLAv2 (online-local)
+PATH_AUDIT_LOG="detectores/apache_online_local/logs/modsec_audit.log"	#MLAv2 (online-local)
 #PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
-PATH_AUDIT_LOG="detectores/mod_security_offline/logs/modsec_audit.log"	#MLAv3 (offline)
+#PATH_AUDIT_LOG="detectores/mod_security_offline/logs/modsec_audit.log"	#MLAv3 (offline)
 
 #Prefijo utilizado en la creación de nombres de ficheros en memoria para evitar duplicidades
 NOMBRE_RAIZ=$(pwd)
@@ -89,3 +94,10 @@ IL_MODSECURITY="1"	#'1' para activar IL con ModSecurity '0' para desactivarla (o
 IL_NEMESIDA="0"	#'1' para activar IL con Nemesida '0' para desactivarla
 IL_SNORT="0"	#'1' para activar IL con Snort '0' para desactivarla
 
+#DETECTORES
+DIR_APACHE_ONLINE="${DIR_DETECTORES}apache_online_local/"
+FILE_CONFIG_APACHE="${DIR_APACHE_ONLINE}conf/httpd.conf"
+FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
+
+#Puerto por defecto usado en 'multi-instancia online'
+DEFAULT_PORT=80
