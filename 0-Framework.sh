@@ -101,6 +101,8 @@ set -a; source "${DIR_ROOT}/framework_config_interna.sh"; set +a
 #Comprobamos ejecución IL
 
 if [ "${IL}" -ne 1 ]; then 
+	#Configuramos instancia de apache y arrancamos servidor
+	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${CONFIGURA_INSTANCIA_APACHE}"
 	#recorremos directorio de entrada con los ficheros a evaluar.
 	for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 		printf "\n${i}\n"
@@ -126,9 +128,6 @@ if [ "${IL}" -ne 1 ]; then
 		OUT_LOG_TMP="${DIR_TMP_FAST}/${NOMBRE_RAIZ}_$(basename ${i%.*})${LOG_EXTENSION}"	#fichero donde queda registrado el log relativo a una uri (temporal)
 		OUT_INDEX="${DIR_ROOT}/${DIROUT_INDEX}/$(basename ${i%.*})${INDEX_EXTENTION}"	#fichero de index generado
 		uris_totales=$(wc -l "${i}" | cut -d' ' -f1)
-
-		#Configuramos instancia de apache y arrancamos servidor
-		[ "${LAUNCH_TYPE}" = "online-local" ] && "${CONFIGURA_INSTANCIA_APACHE}"
 
 		#################################1-1#############################
 		case "${LAUNCH_MODE}" in

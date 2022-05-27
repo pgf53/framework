@@ -100,4 +100,4 @@ FILE_CONFIG_APACHE="${DIR_APACHE_ONLINE}conf/httpd.conf"
 FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
 
 #Puerto por defecto usado en 'multi-instancia online'
-DEFAULT_PORT=80
+DEFAULT_PORT=84

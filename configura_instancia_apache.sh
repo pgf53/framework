@@ -23,6 +23,9 @@ sed -i "s/^Listen .*/Listen ${DEFAULT_PORT}/g" "${FILE_CONFIG_APACHE}"	#Establec
 printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
 printf "El puerto de escucha de apache es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
 
+#Cambiamos en la configuración el puerto de escucha predeterminado por el usado realmente
+sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.sh
+
 #Establecemos puerto HTTPS
 DEFAULT_PORT=$((DEFAULT_PORT+1))
 calcula_puerto
@@ -33,4 +36,3 @@ sed -i "s/^<VirtualHost _default_:.*/<VirtualHost _default_:${DEFAULT_PORT}>/g" 
 
 #Procedemos a arrancar el servidor
 httpd -f "${FILE_CONFIG_APACHE}" -k start
-
