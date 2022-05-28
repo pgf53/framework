@@ -18,6 +18,7 @@ def find_all(a_str, sub):
 
 
 file_log = sys.argv[1]	#fichero de log a procesar
+num_uris_log_totales = sys.argv[2] #Número de líneas del log a procesar
 
 #Creamos el nombre del fichero de index
 file_index = file_log.replace(os.environ["LOG_EXTENSION"], os.environ["INDEX_EXTENTION"])
@@ -61,7 +62,7 @@ PATRONSCOREfin='"]'
 ids_registrados = []
 score = 0
 pl_min = 4
-
+num_uri_log_actual = 1
 
 #Leemos fichero de log
 if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
@@ -71,6 +72,9 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 				continue
 			if re.search(SECCIONA, linea_log):
 				seccion = "SECCIONA"
+				if os.environ["LAUNCH_MODE"] == "multiple":
+					print(str(num_uri_log_actual) + "/" + num_uris_log_totales)
+					num_uri_log_actual += 1
 			elif re.search(SECCIONB, linea_log):
 				seccion = "SECCIONB"
 			elif re.search(SECCIONH, linea_log):

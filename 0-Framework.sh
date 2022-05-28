@@ -255,9 +255,11 @@ if [ "${IL}" -ne 1 ]; then
 								done
 					fi
 
+					SECCIONA="-A--"
+					num_uris_log=$(cat "${OUT_LOG}" | grep -c ".*${SECCIONA}.*")
 					#Fase 2: Análisis
 					printf "\nIniciando análisis...\n\n"
-					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG}"
+					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG}" "${num_uris_log}"
 					printf "\n\n"
 
 					#Fase 3 Clasificador
