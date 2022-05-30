@@ -35,7 +35,7 @@ NO_REPEAT_SCRIPT="remove_repeats.sh"	#Script usado para eliminar uris repetidas 
 										#Para catalogar una línea como repetida (se omite el campo ID en la comparación).
 REBUILD_OUTPUT="rebuild_output.sh"	#Script de reconstrucción de la salida
 ANADE_BARRA="anade_barra.sh"	#Asegura que todas las uris de fichero de entrada empiecen por '/'
-CONFIGURA_INSTANCIA_APACHE="configura_instancia_apache.sh"	#Script utilizado para configurar servidor apache
+CONFIGURA_INSTANCIA_APACHE="configura_instancia.sh"	#Script utilizado para configurar servidor apache
 
 #Scripts online-remoto. Scripts utilizados en el tipo de lanzamiento "online-remoto" que permiten la comunicación entre el equipo local y el remoto.
 REMOTE_SCRIPT="remoto.sh"	#Utilizado en LAUNCH_MODE=1to1. Script desplegado en equipo remoto que iniciará una sesión byobu y ejecutará REMOTE_MONITORIZATION_SCRIPT.

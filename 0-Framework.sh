@@ -103,7 +103,6 @@ set -a; source "${DIR_ROOT}/framework_config_interna.sh"; set +a
 if [ "${IL}" -ne 1 ]; then 
 	#Configuramos instancia de apache y arrancamos servidor
 	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${CONFIGURA_INSTANCIA_APACHE}"
-	exit 1
 	#recorremos directorio de entrada con los ficheros a evaluar.
 	for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 		printf "\n${i}\n"
