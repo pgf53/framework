@@ -76,9 +76,9 @@ SERVERURL_LOCAL="http://localhost"	#URL para lanzamiento local (permite especifi
 PATH_ACCESS_LOG="detectores/apache_online_local/logs/access_log"
 
 #AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
-PATH_AUDIT_LOG="detectores/apache_online_local/logs/modsec_audit.log"	#MLAv2 (online-local)
+#PATH_AUDIT_LOG="detectores/apache_online_local/logs/modsec_audit.log"	#MLAv2 (online-local)
 #PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
-#PATH_AUDIT_LOG="detectores/mod_security_offline/logs/modsec_audit.log"	#MLAv3 (offline)
+PATH_AUDIT_LOG="detectores/mod_security_offline/logs/modsec_audit.log"	#MLAv3 (offline)
 
 #Prefijo utilizado en la creación de nombres de ficheros en memoria para evitar duplicidades
 NOMBRE_RAIZ=$(pwd)
@@ -96,6 +96,8 @@ IL_SNORT="0"	#'1' para activar IL con Snort '0' para desactivarla
 
 #DETECTORES
 DIR_APACHE_ONLINE="${DIR_DETECTORES}apache_online_local/"
+DIR_MODSECURITY_OFFLINE="${DIR_DETECTORES}mod_security_offline/"
+DIR_LIB_MODSECURITY_OFFLINE="/usr/local/modsecurity/lib"
 FILE_CONFIG_APACHE="${DIR_APACHE_ONLINE}conf/httpd.conf"
 FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
 

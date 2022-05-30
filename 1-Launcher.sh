@@ -55,7 +55,7 @@ case "${LAUNCH_TYPE}" in
 				 awk '{print $2}' "${FILE_URI}" > "${FILE_NAME}"
 			fi
 		#Necesario para ModsecurityV3
-		LD_LIBRARY_PATH="/usr/local/modsecurity/lib"
+		LD_LIBRARY_PATH="${DIR_LIB_MODSECURITY_OFFLINE}"
 		export LD_LIBRARY_PATH
 		[ "${URIS_FORMAT}" = "basic" ] && "${DIR_ROOT}/${API_SCRIPT}" "${FILE_URI}" > /dev/null || "${DIR_ROOT}/${API_SCRIPT}" "${FILE_NAME}" > /dev/null	#Script de lanzamiento del usuario. Recibe como argumento el fichero uri de entrada
 		[ "${URIS_FORMAT}" = "extended" ] && rm -f "${FILE_NAME}"

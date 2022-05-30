@@ -53,11 +53,11 @@ PATRONURIfin = 'HTTP'
 
 # Score Reglas
 #ModSecurityV2
-PATRONSCOREinicio='[msg "Incoming Anomaly Score: '
-PATRONSCOREfin='"]'
+#PATRONSCOREinicio='[msg "Incoming Anomaly Score: '
+#PATRONSCOREfin='"]'
 #ModSecurityV3
-#PATRONSCOREinicio= '[msg "Inbound Anomaly Score Exceeded (Total Score: '
-#PATRONSCOREfin= ')"]'
+PATRONSCOREinicio= '[msg "Inbound Anomaly Score Exceeded (Total Score: '
+PATRONSCOREfin= ')"]'
 
 ids_registrados = []
 score = 0
