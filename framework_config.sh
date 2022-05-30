@@ -8,7 +8,7 @@
 LAUNCH_MODE="multiple"
 
 #TIPO DE LANZAMIENTO. "online-local": lanza las uris contra detector ubicado en equipo local. "online-remoto": lanza las uris contra detector ubicado en equipo remoto. "offline": lanza las uris contra 	equipo local, no requiere la presencia de un servidor. 
-LAUNCH_TYPE="offline"
+LAUNCH_TYPE="online-local"
 
 #REPETICIONES EN FICHERO DE ENTRADA. "yes" elimina las uris repetidas en el fichero de entrada y posteriormente recontruye la salida para obtener el mismo resultado que si se lanzase el fichero de entrada original. Se realiza con el propósito de acelerar el anális omitiendo uris repetidas. "no" envía fichero uri de entrada original (con repeticiones si las hubiere).
 NO_REPEAT="no"

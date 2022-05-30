@@ -72,14 +72,6 @@ ID="ID"	##Identificador que precederá al campo "uri" cuando el formato de entra
 SERVERURL_LOCAL="http://localhost"	#URL para lanzamiento local (permite especificar "http" o "https"). Usado en tipo de lanzamiento "online-local" y "offline"
 
 
-#ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
-PATH_ACCESS_LOG="detectores/apache_online_local/logs/access_log"
-
-#AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
-#PATH_AUDIT_LOG="detectores/apache_online_local/logs/modsec_audit.log"	#MLAv2 (online-local)
-#PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
-PATH_AUDIT_LOG="detectores/mod_security_offline/logs/modsec_audit.log"	#MLAv3 (offline)
-
 #Prefijo utilizado en la creación de nombres de ficheros en memoria para evitar duplicidades
 NOMBRE_RAIZ=$(pwd)
 NOMBRE_RAIZ=$(basename "${NOMBRE_RAIZ}")
@@ -94,12 +86,47 @@ IL_MODSECURITY="1"	#'1' para activar IL con ModSecurity '0' para desactivarla (o
 IL_NEMESIDA="0"	#'1' para activar IL con Nemesida '0' para desactivarla
 IL_SNORT="0"	#'1' para activar IL con Snort '0' para desactivarla
 
-#DETECTORES
+#RUTA DETECTORES
 DIR_APACHE_ONLINE="${DIR_DETECTORES}apache_online_local/"
 DIR_MODSECURITY_OFFLINE="${DIR_DETECTORES}mod_security_offline/"
+DIR_NEMESIDA_ONLINE="${DIR_DETECTORES}nemesida_online_local/"
+
+#FICHEROS USADOS POR DETECTORES
+
+#MODSECURITY_OFFLINE
 DIR_LIB_MODSECURITY_OFFLINE="/usr/local/modsecurity/lib"
+
+#APACHE_ONLINE
 FILE_CONFIG_APACHE="${DIR_APACHE_ONLINE}conf/httpd.conf"
 FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
 
+#NEMESIDA_ONLINE
+FILE_CONFIG_NEMESIDA="${DIR_NEMESIDA_ONLINE}nginx.conf"
+WAF_MODULE="${DIR_NEMESIDA_ONLINE}ngx_http_waf_module.so"
+FILE_PID="${DIR_NEMESIDA_ONLINE}run/nginx.pid"
+
+#DETECTORES DISPONIBLES
+#Poner a 1 el detector a usar, el resto debe estar a 0
+MODSECURITY_ONLINE=0
+MODSECURITY_OFFLINE=0
+NEMESIDA_ONLINE=1
+
+if [ "${MODSECURITY_OFFLINE}" -eq 1 ]; then
+	PATH_AUDIT_LOG="${DIR_MODSECURITY_OFFLINE}logs/modsec_audit.log"
+elif [ "${MODSECURITY_ONLINE}" -eq 1 ]; then
+	PATH_ACCESS_LOG="${DIR_APACHE_ONLINE}logs/access_log"
+	PATH_AUDIT_LOG="${DIR_APACHE_ONLINE}logs/modsec_audit.log"
+elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
+	PATH_ACCESS_LOG="${DIR_NEMESIDA_ONLINE}log/access.log"
+	PATH_AUDIT_LOG="${DIR_NEMESIDA_ONLINE}log/error.log"
+fi
+
+#ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
+#PATH_ACCESS_LOG="detectores/apache_online_local/logs/access_log"
+#AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
+#PATH_AUDIT_LOG="detectores/apache_online_local/logs/modsec_audit.log"	#MLAv2 (online-local)
+#PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
+
+
 #Puerto por defecto usado en 'multi-instancia online'
-DEFAULT_PORT=84
+DEFAULT_PORT=80
