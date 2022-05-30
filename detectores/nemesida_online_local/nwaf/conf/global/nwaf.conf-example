@@ -1,0 +1,173 @@
+##
+# Example of Nemesida WAF settings
+# The file settings are presented as an example. To use, copy the necessary parameters
+# to file nwaf.conf or use the web interface for managing settings (only for the commercial version)
+##
+
+##
+# License key and signature database
+##
+
+# nwaf_license_key none;
+# nwaf_rules /etc/nginx/nwaf/rules.bin;
+
+##
+# Nemesida WAF API and proxy settings
+##
+
+# nwaf_sys_proxy none;
+# nwaf_api_proxy none;
+# nwaf_api_conf host=none;
+
+##
+# Nemesida WAF activation for virtual host
+##
+
+# nwaf_host_enable *;
+# nwaf_host_enable example.com, example.org;
+# nwaf_host_enable .example.com;
+# nwaf_host_enable *.example.com;
+
+##
+# Ban settings
+##
+
+# nwaf_limit rate=5r/m block_time=600;
+# nwaf_limit rate=5r/m block_time=0 domain=example.com;
+
+##
+# Unban settings using captcha
+##
+
+# nwaf_ban_captcha_host *;
+# nwaf_ban_captcha_host example.com, example.org;
+# nwaf_ban_captcha_host .example.com;
+# nwaf_ban_captcha_host *.example.com;
+
+# nwaf_ban_captcha_url example.com/captcha.php;
+# nwaf_ban_captcha_path /captcha_path;
+
+# nwaf_ban_captcha_token token_for_unban;
+
+##
+# Configure synchronization of banned IPs
+##
+
+# nwaf_sync_ban_ip_key changeme;
+# nwaf_sync_ban_ip_host srv1.example.com/ban_ip_sync_path 15;
+# nwaf_sync_ban_ip_host srv2.example.com/ban_ip_sync_path 15;
+
+##
+# MLA settings
+##
+
+# nwaf_mla 127.0.0.1:5101 mla_score:2;
+
+# nwaf_mla_host_lm *;
+# nwaf_mla_host_lm example.com, example.org;
+# nwaf_mla_host_lm .example.com;
+# nwaf_mla_host_lm *.example.com;
+
+##
+# MLC settings
+##
+
+# nwaf_rmq_host_exclude *;
+# nwaf_rmq_host_exclude example.com, example.org;
+# nwaf_rmq_host_exclude .example.com;
+# nwaf_rmq_host_exclude *.example.com;
+
+# nwaf_ai_extra_host_lm *;
+# nwaf_ai_extra_host_lm example.com, example.org;
+# nwaf_ai_extra_host_lm .example.com;
+# nwaf_ai_extra_host_lm *.example.com;
+
+# nwaf_ai_extra_host_wl *;
+# nwaf_ai_extra_host_wl example.com, example.org;
+# nwaf_ai_extra_host_wl .example.com;
+# nwaf_ai_extra_host_wl *.example.com;
+
+# nwaf_bf_detect_host_lm *;
+# nwaf_bf_detect_host_lm example.com, example.org;
+# nwaf_bf_detect_host_lm .example.com;
+# nwaf_bf_detect_host_lm *.example.com;
+
+# nwaf_ddos_detect_host_lm *;
+# nwaf_ddos_detect_host_lm example.com, example.org;
+# nwaf_ddos_detect_host_lm .example.com;
+# nwaf_ddos_detect_host_lm *.example.com;
+
+##
+# RabbitMQ and AI extra global settings
+##
+
+# nwaf_rmq host=127.0.0.1 user=guest password=guest;
+
+##
+# ClamAV settings
+##
+
+# nwaf_clamav 127.0.0.1:3310;
+# nwaf_clamav 127.0.0.1:3310 FILE_ONLY;
+
+## Add file's hash to ClamAV whitelist
+# nwaf_clamav_wl FILE-MD5-HASH;
+
+##
+# Global WL/LM policy
+##
+
+## Add client's IP to the whitelist
+# nwaf_ip_wl x.x.x.x;
+# nwaf_ip_wl x.x.x.x domain=example.com;
+# nwaf_ip_wl x.x.x.x domain=.example.com;
+# nwaf_ip_wl x.x.x.x domain=*.example.com;
+
+## Add client's IP to the LM mode (like an IDS mode)
+# nwaf_ip_lm x.x.x.x;
+# nwaf_ip_lm x.x.x.x domain=example.com;
+# nwaf_ip_lm x.x.x.x domain=.example.com;
+# nwaf_ip_lm x.x.x.x domain=*.example.com;
+
+## Switch off the Nemesida WAF for virtual host
+# nwaf_host_wl *;
+# nwaf_host_wl example.com, example.org;
+# nwaf_host_wl .example.com;
+# nwaf_host_wl *.example.com;
+
+## Add vhosts to the LM mode (like an IDS mode)
+# nwaf_host_lm *;
+# nwaf_host_lm example.com, example.org;
+# nwaf_host_lm .example.com;
+# nwaf_host_lm *.example.com;
+
+##
+# Exclude request body processing for PUT method
+##
+
+# nwaf_put_body_exclude *;
+# nwaf_put_body_exclude example.com, example.org;
+# nwaf_put_body_exclude .example.com;
+# nwaf_put_body_exclude *.example.com;
+
+##
+# Exclude request body processing for specific URL
+##
+
+# nwaf_body_exclude example.com/uploads;
+# nwaf_body_exclude example.com/uploads.php;
+
+##
+# GeoLite2 Country databases
+##
+
+# nwaf_geoip_db_path /path/to/GeoLite2-City.mmdb;
+
+##
+# Enable logging for all matched rules
+##
+
+# nwaf_log_mr_all;
+# nwaf_log_mr_all domain=example.com;
+# nwaf_log_mr_all domain=.example.com;
+# nwaf_log_mr_all domain=*.example.com;
