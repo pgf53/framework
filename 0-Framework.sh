@@ -255,8 +255,12 @@ if [ "${IL}" -ne 1 ]; then
 								done
 					fi
 
-					SECCIONA="-A--"
-					num_uris_log=$(cat "${OUT_LOG}" | grep -c ".*${SECCIONA}.*")
+					if [ "${MODSECURITY_ONLINE}" -eq 1 -o "${MODSECURITY_OFFLINE}" -eq 1 ]; then
+						SECCIONA="-A--"
+						num_uris_log=$(cat "${OUT_LOG}" | grep -c ".*${SECCIONA}.*")
+					elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
+						num_uris_log=$(wc -l "${OUT_LOG}" | cut -d' ' -f'1')
+					fi
 					#Fase 2: Análisis
 					printf "\nIniciando análisis...\n\n"
 					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG}" "${num_uris_log}"
@@ -296,8 +300,14 @@ if [ "${IL}" -ne 1 ]; then
 		touch "entradas_finalizadas/${FILENAME}"
 
 	done
-	#Tras procesar ficheros detenemos la instancia de apache
-	[ "${LAUNCH_TYPE}" = "online-local" ] && httpd -f "${FILE_CONFIG_APACHE}" -k stop
+
+	#Tras procesar ficheros detenemos la instancia
+	if [ "${LAUNCH_TYPE}" = "online-local" -a "${MODSECURITY_ONLINE}" -eq 1 ]; then
+		httpd -f "${FILE_CONFIG_APACHE}" -k stop
+	elif [ "${LAUNCH_TYPE}" = "online-local" -a "${NEMESIDA_ONLINE}" -eq 1 ]; then
+		PID=$(cat ${FILE_PID})
+		kill -9 ${PID} $((PID+1)) $((PID+2))
+	fi
 else
 	. "${IL_SCRIPT}"
 fi

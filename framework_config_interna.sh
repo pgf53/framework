@@ -23,11 +23,21 @@ RESULTADOS="Resultados/"	#Directorio donde se almacenarán los resultados una ve
 #FICHERO DE LOG DE FRAMEWORK
 FILE_FRAMEWORK_LOG="${DIR_FRAMEWORK_LOG}framework.log"
 
+#DETECTORES DISPONIBLES
+#Poner a 1 el detector a usar, el resto debe estar a 0
+MODSECURITY_ONLINE=1
+MODSECURITY_OFFLINE=0
+NEMESIDA_ONLINE=0
+
 #SCRIPTS
 
 #Scripts principales. Scripts cuya ejecución secuencial constituyen la funcionalidad de la herramienta.
 LAUNCHER_SCRIPT="1-Launcher.sh"	#Script que lanzará contra un equipo determinado las uris presentes en el fichero de entrada.
-ANALYZER_SCRIPT="2-analyzer.py"	#Script de analizador de Log (introducido por el usuario) que generará el resumen de los ataques (".index") como resultado de procesar el log.
+if [ "${MODSECURITY_OFFLINE}" -eq 1 -o "${MODSECURITY_ONLINE}" -eq 1 ]; then
+	ANALYZER_SCRIPT="2-analyzer.py"	#Script de analizador de Log (introducido por el usuario) que generará el resumen de los ataques (".index") como resultado de procesar el log.
+elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
+	ANALYZER_SCRIPT="2-analyzer_nemesida_online.py"
+fi
 CLASSIFY_SCRIPT="3-classify.py"	#Script que genera resumen final del análisis. Recibe como entrada el fichero de entrada y el fichero ".index" generado por el ANALYZER_SCRIPT.
 
 #Scripts externos. Scripts integrados en la herramienta que permiten funcionalidades adicionales de esta.
@@ -104,12 +114,9 @@ FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
 FILE_CONFIG_NEMESIDA="${DIR_NEMESIDA_ONLINE}nginx.conf"
 WAF_MODULE="${DIR_NEMESIDA_ONLINE}ngx_http_waf_module.so"
 FILE_PID="${DIR_NEMESIDA_ONLINE}run/nginx.pid"
+FILE_DEFAULT="${DIR_NEMESIDA_ONLINE}conf.d/default.conf"
+FILE_NWAF="${DIR_NEMESIDA_ONLINE}nwaf/conf/global/nwaf.conf"
 
-#DETECTORES DISPONIBLES
-#Poner a 1 el detector a usar, el resto debe estar a 0
-MODSECURITY_ONLINE=0
-MODSECURITY_OFFLINE=0
-NEMESIDA_ONLINE=1
 
 if [ "${MODSECURITY_OFFLINE}" -eq 1 ]; then
 	PATH_AUDIT_LOG="${DIR_MODSECURITY_OFFLINE}logs/modsec_audit.log"

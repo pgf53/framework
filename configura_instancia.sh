@@ -36,6 +36,7 @@ crea_instancia_apache()
 
 	#Procedemos a arrancar el servidor
 	httpd -f "${FILE_CONFIG_APACHE}" -k start
+		
 }
 
 crea_instancia_nemesida()
@@ -49,6 +50,21 @@ crea_instancia_nemesida()
 		-e "s#access_log.*main;#access_log ${PATH_ACCESS_LOG}  main;#g" \
 		-e "s#include.*conf.d#include ${DIR_NEMESIDA_ONLINE}conf.d#g" \
 		-e "s#include.*nwaf#include ${DIR_NEMESIDA_ONLINE}nwaf#g" "${FILE_CONFIG_NEMESIDA}"
+
+	#Adaptamos fichero 'default.conf' de nginx
+	sed -i -e "s#listen .*# listen ${DEFAULT_PORT};#g" \
+		-e "s#root .*#root ${DIR_NEMESIDA_ONLINE}html;#g" "${FILE_DEFAULT}"
+
+	#Adaptamos 'nwaf.conf' 
+	sed -i "s#^nwaf_rules .*#nwaf_rules ${DIR_NEMESIDA_ONLINE}nwaf/rules.bin;#g" "${FILE_NWAF}"
+
+	#Procedemos a arrancar la instancia nginx
+	nginx -c "${FILE_CONFIG_NEMESIDA}"
+
+	if [ $? -eq 0 ]; then 
+		printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
+		printf "El puerto de escucha de nginx es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
+	fi 
 }
 
 
