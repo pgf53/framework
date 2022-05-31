@@ -261,10 +261,12 @@ if [ "${IL}" -ne 1 ]; then
 					elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
 						num_uris_log=$(wc -l "${OUT_LOG}" | cut -d' ' -f'1')
 					fi
+
 					#Fase 2: Análisis
 					printf "\nIniciando análisis...\n\n"
 					"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG}" "${num_uris_log}"
 					printf "\n\n"
+
 
 					#Fase 3 Clasificador
 					printf "\nIniciando clasificador...\n\n"

@@ -56,7 +56,7 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 						for linea_access in f2:
 							if re.search(peticion, linea_access):
 								y = linea_access.split()
-								uri = y[6]
+								uri = y[5]
 								break
 							
 					if x[10] == "blocked":
