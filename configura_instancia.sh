@@ -58,6 +58,9 @@ crea_instancia_nemesida()
 	#Adaptamos 'nwaf.conf' 
 	sed -i "s#^nwaf_rules .*#nwaf_rules ${DIR_NEMESIDA_ONLINE}nwaf/rules.bin;#g" "${FILE_NWAF}"
 
+	#Cambiamos en la configuración el puerto de escucha predeterminado por el usado realmente
+	sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.sh
+
 	#Procedemos a arrancar la instancia nginx
 	nginx -c "${FILE_CONFIG_NEMESIDA}"
 
