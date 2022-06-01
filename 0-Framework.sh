@@ -102,7 +102,7 @@ set -a; source "${DIR_ROOT}/framework_config_interna.sh"; set +a
 
 if [ "${IL}" -ne 1 ]; then 
 	#Configuramos instancia de apache y arrancamos servidor
-	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${CONFIGURA_INSTANCIA_APACHE}"
+	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${CONFIGURA_INSTANCIA}"
 	#recorremos directorio de entrada con los ficheros a evaluar.
 	for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
 		printf "\n${i}\n"
@@ -303,13 +303,9 @@ if [ "${IL}" -ne 1 ]; then
 
 	done
 
-	#Tras procesar ficheros detenemos la instancia
-	if [ "${LAUNCH_TYPE}" = "online-local" -a "${MODSECURITY_ONLINE}" -eq 1 ]; then
-		httpd -f "${FILE_CONFIG_APACHE}" -k stop
-	elif [ "${LAUNCH_TYPE}" = "online-local" -a "${NEMESIDA_ONLINE}" -eq 1 ]; then
-		PID=$(cat ${FILE_PID})
-		kill -9 ${PID} $((PID+1)) $((PID+2))
-	fi
+	#Tras procesar ficheros detenemos la instancia si estamos en modalidad online-local
+	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${DETENER_SERVIDOR_INSTANCIA}"
+
 else
 	. "${IL_SCRIPT}"
 fi
