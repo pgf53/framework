@@ -18,7 +18,7 @@ PASS="root"
 
 #FORMATO DE FICHERO URI DE ENTRADA.	"basic": URI
 									#"extended": ID	URI
-URIS_FORMAT="extended"
+URIS_FORMAT="basic"
 
 
 ############LAUNCHER#########

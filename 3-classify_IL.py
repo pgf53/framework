@@ -39,6 +39,7 @@ def extrae_uri(line_index):
 		uri_index = line_index[len(os.environ["URI_START"]):pos_end]
 
 	else:
+		print(line_index)
 		sys.exit("Error: no se ha encontrado ninguna uri en el fichero de 'index'")
 
 	return uri_index
