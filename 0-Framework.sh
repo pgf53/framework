@@ -100,7 +100,7 @@ set -a; source "${DIR_ROOT}/framework_config_interna.sh"; set +a
 
 #Comprobamos ejecución IL
 
-if [ "${IL}" -ne 1 ]; then 
+if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1 ]; then 
 	#Configuramos instancia de apache y arrancamos servidor
 	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${CONFIGURA_INSTANCIA}"
 	#recorremos directorio de entrada con los ficheros a evaluar.
@@ -307,6 +307,25 @@ if [ "${IL}" -ne 1 ]; then
 	[ "${LAUNCH_TYPE}" = "online-local" ] && ./"${DETENER_SERVIDOR_INSTANCIA}"
 
 else
-	. "${IL_SCRIPT}"
+	#exportamos librerías dinámicas
+	export LD_LIBRARY_PATH="${DIR_LIB_IL_OFFLINE}"
+	for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
+		uris_totales=$(wc -l ${i} | cut -d' ' -f'1')
+		nombre_fichero=$(basename $i)
+		nombre_fichero_index=$(printf "%s" "${nombre_fichero}" | sed "s/${FILE_IN_EXTENSION}/${INDEX_EXTENTION}/g")
+		#generamos index
+		printf "\nIniciando análisis...\n\n"
+		"${DIR_ROOT}/${IL_SCRIPT}" $i
+		#obtenemos fichero index generado
+		fichero_index="${DIR_ROOT}/${DIROUT_INDEX}/${nombre_fichero_index}"
+		num_lineas_index=$(wc -l ${fichero_index} | cut -d' ' -f'1')
+		#generamos attacks y clean
+		printf "\nIniciando clasificador...\n\n"
+		"${DIR_ROOT}/${CLASSIFY_IL_SCRIPT}" $i $uris_totales $fichero_index $num_lineas_index
+		OUT_ATTACKS_INFO="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${INFO_ATTACKS_EXTENSION}"
+		OUT_CLEAN="${DIR_ROOT}/${DIROUT_CLEAN}/$(basename ${i%.*})${CLEAN_EXTENSION}"
+		OUT_ATTACKS="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${ATTACKS_EXTENSION}"
+		imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
+	done
 fi
 

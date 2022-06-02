@@ -27,7 +27,61 @@ FILE_FRAMEWORK_LOG="${DIR_FRAMEWORK_LOG}framework.log"
 #Poner a 1 el detector a usar, el resto debe estar a 0
 MODSECURITY_ONLINE=0
 MODSECURITY_OFFLINE=0
-NEMESIDA_ONLINE=1
+NEMESIDA_ONLINE=0
+IL_MODSECURITY=0
+IL_NEMESIDA=0
+IL_SNORT=1
+
+#RUTA DETECTORES
+DIR_APACHE_ONLINE="${DIR_DETECTORES}apache_online_local/"
+DIR_MODSECURITY_OFFLINE="${DIR_DETECTORES}mod_security_offline/"
+DIR_NEMESIDA_ONLINE="${DIR_DETECTORES}nemesida_online_local/"
+DIR_IL="${DIR_DETECTORES}IL/"
+
+#FICHEROS Y DIRECTORIOS USADOS POR DETECTORES
+
+#MODSECURITY_OFFLINE
+DIR_LIB_MODSECURITY_OFFLINE="/usr/local/modsecurity/lib"
+
+#APACHE_ONLINE
+FILE_CONFIG_APACHE="${DIR_APACHE_ONLINE}conf/httpd.conf"
+FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
+
+#NEMESIDA_ONLINE
+FILE_CONFIG_NEMESIDA="${DIR_NEMESIDA_ONLINE}nginx.conf"
+WAF_MODULE="${DIR_NEMESIDA_ONLINE}ngx_http_waf_module.so"
+FILE_PID="${DIR_NEMESIDA_ONLINE}run/nginx.pid"
+FILE_DEFAULT="${DIR_NEMESIDA_ONLINE}conf.d/default.conf"
+FILE_NWAF="${DIR_NEMESIDA_ONLINE}nwaf/conf/global/nwaf.conf"
+
+#IL_OFFLINE
+DIR_LIB_IL_OFFLINE="/usr/lib64"
+SNORT_RULES="${DIR_IL}snort_rules/"
+NEMESIDA_RULES="${DIR_IL}nemesida-rules-bin-20220109.txt"
+MODSECURITY_RULES="${DIR_IL}etc/basic_rules.conf"
+
+#COLUMNAS OPCIONALES. #Columnas opcionales del fichero de resultados "*-info.attacks". Se generará un nuevo fichero "*-info_hide.attacks" que eliminará estos campos de los resultados.
+OPTIONAL_COLUMNS="3 4"
+
+
+if [ "${MODSECURITY_OFFLINE}" -eq 1 ]; then
+	PATH_AUDIT_LOG="${DIR_MODSECURITY_OFFLINE}logs/modsec_audit.log"
+	LAUNCH_TYPE="offline" #TIPO DE LANZAMIENTO. "online-local": lanza las uris contra detector ubicado en equipo local. "online-remoto": lanza las uris contra detector ubicado en equipo remoto. "offline": lanza las uris contra 	equipo local, no requiere la presencia de un servidor.
+	HIDE_COLUMNS="yes" #HABILITAR/DESHABILITAR COLUMNA. "yes" se ocultan las columnas opcionales. "no" se muestran todas las columnas de fichero "*-info.attacks"
+elif [ "${MODSECURITY_ONLINE}" -eq 1 ]; then
+	PATH_ACCESS_LOG="${DIR_APACHE_ONLINE}logs/access_log"
+	PATH_AUDIT_LOG="${DIR_APACHE_ONLINE}logs/modsec_audit.log"
+	LAUNCH_TYPE="online-local"
+	HIDE_COLUMNS="yes"
+elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
+	PATH_ACCESS_LOG="${DIR_NEMESIDA_ONLINE}log/access.log"
+	PATH_AUDIT_LOG="${DIR_NEMESIDA_ONLINE}log/error.log"
+	LAUNCH_TYPE="online-local"
+	HIDE_COLUMNS="no"
+elif [ "${IL_MODSECURITY}" -eq 1 -o "${IL_NEMESIDA}" -eq 1 -o "${IL_SNORT}" -eq 1 ]; then
+	LAUNCH_TYPE="offline"
+	HIDE_COLUMNS="no"
+fi
 
 #SCRIPTS
 
@@ -39,6 +93,8 @@ elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
 	ANALYZER_SCRIPT="2-analyzer_nemesida_online.py"
 fi
 CLASSIFY_SCRIPT="3-classify.py"	#Script que genera resumen final del análisis. Recibe como entrada el fichero de entrada y el fichero ".index" generado por el ANALYZER_SCRIPT.
+IL_SCRIPT="IL.sh"	#Script para dar soporte a IL
+CLASSIFY_IL_SCRIPT="3-classify_IL.py"	#Script que genera resumen final del análisis cuando se usa IL.
 
 #Scripts externos. Scripts integrados en la herramienta que permiten funcionalidades adicionales de esta.
 NO_REPEAT_SCRIPT="remove_repeats.sh"	#Script usado para eliminar uris repetidas del fichero de entrada. En caso de que el formato de entrada sea "extended" solo se evaluará el campo de "uri"
@@ -90,52 +146,6 @@ NOMBRE_RAIZ=$(basename "${NOMBRE_RAIZ}")
 
 #BYOBU_SESSION. Nombre de la sesión byobu en la que trabajaremos. IMPORTANTE: este nombre también se usa en la sesión byobu creada en lanzamiento de tipo "online_local"
 BYOBU_SESSION="${NOMBRE_RAIZ}_modo_online"
-
-#IL
-IL_SCRIPT="${DIR_ROOT}/IL.sh"
-IL="0"	#'1' para activar ejecución de IL (desactivada por defecto)
-IL_MODSECURITY="1"	#'1' para activar IL con ModSecurity '0' para desactivarla (opción por defecto)
-IL_NEMESIDA="0"	#'1' para activar IL con Nemesida '0' para desactivarla
-IL_SNORT="0"	#'1' para activar IL con Snort '0' para desactivarla
-
-#RUTA DETECTORES
-DIR_APACHE_ONLINE="${DIR_DETECTORES}apache_online_local/"
-DIR_MODSECURITY_OFFLINE="${DIR_DETECTORES}mod_security_offline/"
-DIR_NEMESIDA_ONLINE="${DIR_DETECTORES}nemesida_online_local/"
-
-#FICHEROS USADOS POR DETECTORES
-
-#MODSECURITY_OFFLINE
-DIR_LIB_MODSECURITY_OFFLINE="/usr/local/modsecurity/lib"
-
-#APACHE_ONLINE
-FILE_CONFIG_APACHE="${DIR_APACHE_ONLINE}conf/httpd.conf"
-FILE_CONFIG_SSL="${DIR_APACHE_ONLINE}conf.d/ssl.conf"
-
-#NEMESIDA_ONLINE
-FILE_CONFIG_NEMESIDA="${DIR_NEMESIDA_ONLINE}nginx.conf"
-WAF_MODULE="${DIR_NEMESIDA_ONLINE}ngx_http_waf_module.so"
-FILE_PID="${DIR_NEMESIDA_ONLINE}run/nginx.pid"
-FILE_DEFAULT="${DIR_NEMESIDA_ONLINE}conf.d/default.conf"
-FILE_NWAF="${DIR_NEMESIDA_ONLINE}nwaf/conf/global/nwaf.conf"
-
-
-if [ "${MODSECURITY_OFFLINE}" -eq 1 ]; then
-	PATH_AUDIT_LOG="${DIR_MODSECURITY_OFFLINE}logs/modsec_audit.log"
-elif [ "${MODSECURITY_ONLINE}" -eq 1 ]; then
-	PATH_ACCESS_LOG="${DIR_APACHE_ONLINE}logs/access_log"
-	PATH_AUDIT_LOG="${DIR_APACHE_ONLINE}logs/modsec_audit.log"
-elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
-	PATH_ACCESS_LOG="${DIR_NEMESIDA_ONLINE}log/access.log"
-	PATH_AUDIT_LOG="${DIR_NEMESIDA_ONLINE}log/error.log"
-fi
-
-#ACCESS_LOG. Requerido en lanzamiento de tipo "online". Ruta del registro de accesos al servidor. 
-#PATH_ACCESS_LOG="detectores/apache_online_local/logs/access_log"
-#AUDIT_LOG. Ruta del registro de auditoría donde el detector escribe información  (Reglas vulneradas, severidad...) sobre la uri lanzada detectada como ataque.
-#PATH_AUDIT_LOG="detectores/apache_online_local/logs/modsec_audit.log"	#MLAv2 (online-local)
-#PATH_AUDIT_LOG="/var/log/modsec_audit.log"	#MLAv3 (offline)
-
 
 #Puerto por defecto usado en 'multi-instancia online'
 DEFAULT_PORT=81

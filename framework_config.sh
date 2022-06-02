@@ -7,9 +7,6 @@
 #MODO DE LANZAMIENTO. "1to1": para lanzamiento y análisis 1 a 1 de las uris. "multiple": para lanzamiento y procesado múltiple de las uris.
 LAUNCH_MODE="multiple"
 
-#TIPO DE LANZAMIENTO. "online-local": lanza las uris contra detector ubicado en equipo local. "online-remoto": lanza las uris contra detector ubicado en equipo remoto. "offline": lanza las uris contra 	equipo local, no requiere la presencia de un servidor. 
-LAUNCH_TYPE="online-local"
-
 #REPETICIONES EN FICHERO DE ENTRADA. "yes" elimina las uris repetidas en el fichero de entrada y posteriormente recontruye la salida para obtener el mismo resultado que si se lanzase el fichero de entrada original. Se realiza con el propósito de acelerar el anális omitiendo uris repetidas. "no" envía fichero uri de entrada original (con repeticiones si las hubiere).
 NO_REPEAT="no"
 
@@ -18,25 +15,10 @@ SSH_PASS="yes"
 #PASS. Contraseña de equipo remoto. Necesario si se emplea sshpass.
 PASS="root"
 
-#CLOUD. configuración para cuando se ejecuta la herramienta con Cloud.
-#EJECUCIÓN EN CLOUD. "yes" prepara directorio con los resultados del análisis y los transfiere al equipo origen. "no" Los archivos de resultados son almacenados en equipo local
-#CLOUD_EXECUTION="yes"
-#EQUIPO ORIGEN CLOUD. Dirección ip del equipo emisor de la herramienta en cloud. Se usa para transferir los resulados automáticamente una vez finaliza el análisis.
-#SOURCE_DEVICE="lt04"
-
-#Usuario y contraseña para conectarnos a equipo origen de cloud. Usado en SSHPASS.
-#USER_CLOUD="root"
-#PASS_CLOUD="root"
 
 #FORMATO DE FICHERO URI DE ENTRADA.	"basic": URI
 									#"extended": ID	URI
 URIS_FORMAT="basic"
-
-#COLUMNAS OPCIONALES. #Columnas opcionales del fichero de resultados "*-info.attacks". Se generará un nuevo fichero "*-info_hide.attacks" que eliminará estos campos de los resultados.
-OPTIONAL_COLUMNS="3 4"
-
-#HABILITAR/DESHABILITAR COLUMNA. "yes" se ocultan las columnas opcionales. "no" se muestran todas las columnas de fichero "*-info.attacks"
-HIDE_COLUMNS="yes"
 
 
 ############LAUNCHER#########
