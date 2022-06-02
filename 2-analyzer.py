@@ -120,6 +120,9 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 						pl_min = pl_linea
 			if seccion == "SECCIONZ":
 				ids_registrados = list(dict.fromkeys(ids_registrados))
+				exist_id = ids_registrados.count('949110')
+				if exist_id > 0:
+					ids_registrados.remove('949110')
 				identificadores = ""
 				for identificador in ids_registrados:
 					if identificadores != "":
@@ -127,9 +130,10 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 					else:
 						identificadores = "[" + identificador + "]"
 				linea_index = "TimeStamp [" + timestamp + "]" + "\t" + "Uri [" + uri + "]" + "\t" + "PLmin [" + str(pl_min) + "]" + "\t" + "Score [" + str(score) + "]" + "\t" + "Nattacks [" + str(len(ids_registrados)) + "]" + "\t" + identificadores
-				f = open(path_index, "a")
-				f.write("%s" %linea_index)
-				f.write("\n")
-				f.close()
+				if int(score) > 0:
+					f = open(path_index, "a")
+					f.write("%s" %linea_index)
+					f.write("\n")
+					f.close()
 else:
 	open(path_index, 'a').close()
