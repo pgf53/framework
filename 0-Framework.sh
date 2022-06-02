@@ -270,7 +270,6 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 
 					#Fase 3 Clasificador
 					printf "\nIniciando clasificador...\n\n"
-					#./3-classify.sh "${i}" "${OUT_INDEX}" "${OUT_ACCESS}"	#el fichero de access solo es necesario para la modalidad "online"
 					"${DIR_ROOT}/${CLASSIFY_SCRIPT}" "${i}" "${uris_totales}" "${OUT_INDEX}"
 					imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
 			;;
@@ -313,7 +312,6 @@ else
 		uris_totales=$(wc -l ${i} | cut -d' ' -f'1')
 		nombre_fichero=$(basename $i)
 		nombre_fichero_index=$(printf "%s" "${nombre_fichero}" | sed "s/${FILE_IN_EXTENSION}/${INDEX_EXTENTION}/g")
-		#generamos index
 		printf "\nIniciando análisis...\n\n"
 		"${DIR_ROOT}/${IL_SCRIPT}" $i
 		#obtenemos fichero index generado

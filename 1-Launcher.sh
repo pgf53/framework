@@ -26,7 +26,17 @@ case "${LAUNCH_TYPE}" in
 				done < "${FILE_URI}"
 			;;
 			extended)
-				URI=$(printf "%s" "${URI}" | cut -d'	' -f2 | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/{/\\{/g' -e 's/}/\\}/g' -e 's/#/%23/g' -e 's/ /%20/g')	#Se extrae la URI en el formato extendido y 																																									se procede como en el 'basic'
+				uri_actual=1
+				uris_totales=$(wc -l "${FILE_URI}" | cut -d' ' -f1)
+				while IFS= read -r URI	
+				do
+					URI=$(printf "%s" "${URI}" | cut -d'	' -f2 | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/{/\\{/g' -e 's/}/\\}/g' -e 's/#/%23/g' -e 's/ /%20/g')
+					curl "${SERVERURL_LOCAL}:${DEFAULT_PORT}${URI}" >/dev/null  2>&1
+					printf "\r                                          "
+					printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
+					uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
+					printf "\n"
+				done < "${FILE_URI}"
 			;;
 			*)
 				printf "\nURIS_FORMAT inválido. Las opciones soportadas son \"basic\" o \"extended\". Se sale...\n"
