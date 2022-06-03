@@ -18,7 +18,8 @@ def find_all(a_str, sub):
 
 
 file_log = sys.argv[1]	#fichero de log a procesar
-num_uris_log_totales = sys.argv[2] #Número de líneas del log a procesar
+if os.environ["LAUNCH_MODE"] == "multiple":
+	num_uris_log_totales = sys.argv[2] #Número de líneas del log a procesar
 
 #Creamos el nombre del fichero de index
 file_index = file_log.replace(os.environ["LOG_EXTENSION"], os.environ["INDEX_EXTENTION"])
@@ -123,6 +124,9 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 				exist_id = ids_registrados.count('949110')
 				if exist_id > 0:
 					ids_registrados.remove('949110')
+				exist_id = ids_registrados.count('980130')
+				if exist_id > 0:
+					ids_registrados.remove('980130')
 				identificadores = ""
 				for identificador in ids_registrados:
 					if identificadores != "":

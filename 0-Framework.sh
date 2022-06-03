@@ -158,7 +158,7 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 					while IFS= read -r input	#Si el formato es "basico" "input=uri lanzada".
 					do
 						#Fase 1: Lanzamiento
-						#Creamos fichero en memoria de una sola uri. El nombre estará creado a partir de directorio de la herramienta de forma que sea único
+						#Creamos fichero en memoria fichero de una sola uri. El nombre estará creado a partir de directorio de la herramienta de forma que sea único
 						printf "%s\n" "${input}" > "${DIR_TMP_FAST}/1to1_${NOMBRE_RAIZ}${FILE_IN_EXTENSION}"
 						if [ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "online-remoto" ]; then 
 							rm -f "${OUT_LOG_TMP}" 1>/dev/null 2>&1	#eliminamos fichero de log temporal de uri anterior
