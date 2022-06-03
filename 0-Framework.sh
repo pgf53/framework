@@ -190,14 +190,15 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 							uri_entrada=$(printf "%s" "${input}" | cut -d'	' -f2)
 						fi
 
-						"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG_TMP}" "${uri_entrada}"
+						"${DIR_ROOT}/${ANALYZER_SCRIPT}" "${OUT_LOG_TMP}"
 
 						#Fase 3 Clasificador
-		#			./3-classify.sh "${input}" "${OUT_INDEX}" "${OUT_ACCESS}" "${uri_actual}"	#el fichero de access solo es necesario para la modalidad "online"  ${PATH_ACCESS_LOG} ${OUT_ACCESS}
-					#pasamos última línea de fichero .index
-					mv "${DIROUT_INDEX}/${NOMBRE_RAIZ}_$(basename ${i%.*})${INDEX_EXTENTION}" "${OUT_INDEX}"
-					[ -s "${OUT_INDEX}" ] && last_line_index=$(tail -1 "${OUT_INDEX}") || last_line_index="uri_limpia"
-					"${DIR_ROOT}/${CLASSIFY_SCRIPT}" "${i}" "${uris_totales}" "${last_line_index}" "${input}" "${uri_actual}"
+						if [ -f "${DIROUT_INDEX}/${NOMBRE_RAIZ}_$(basename ${i%.*})${INDEX_EXTENTION}" ]; then
+							cat "${DIROUT_INDEX}/${NOMBRE_RAIZ}_$(basename ${i%.*})${INDEX_EXTENTION}" >> "${OUT_INDEX}"
+							rm -f "${DIROUT_INDEX}/${NOMBRE_RAIZ}_$(basename ${i%.*})${INDEX_EXTENTION}"
+						fi
+						[ -s "${OUT_INDEX}" ] && last_line_index=$(tail -1 "${OUT_INDEX}") || last_line_index="uri_limpia"
+						"${DIR_ROOT}/${CLASSIFY_SCRIPT}" "${i}" "${uris_totales}" "${last_line_index}" "${input}" "${uri_actual}"
 
 						printf "\r                                          "
 						printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}" 

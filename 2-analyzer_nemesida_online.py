@@ -6,7 +6,8 @@ import linecache
 import re
 
 file_log = sys.argv[1]	#fichero de log a procesar
-num_uris_log_totales = sys.argv[2] #Número de líneas del log a procesar
+if os.environ["LAUNCH_MODE"] == "multiple":
+	num_uris_log_totales = sys.argv[2] #Número de líneas del log a procesar
 file_access = os.environ["PATH_ACCESS_LOG"]
 
 #Creamos el nombre del fichero de index
@@ -20,9 +21,18 @@ num_linea_log_actual = 1
 NEMESIDA_WAF = "Nemesida WAF: the request "
 peticion = ""
 inicio = 1
+log_attack = 0
+
+#Comprobamos si existen ataques en el log
+with open(file_log) as f:
+	for linea_log in f:
+		if re.search(NEMESIDA_WAF, linea_log):
+			log_attack = 1
+			break
+
 
 #Leemos fichero de log
-if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
+if log_attack == 1:
 	with open(file_log) as f:
 		for linea_log in f:
 			if os.environ["LAUNCH_MODE"] == "multiple":
@@ -81,3 +91,5 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 		f.write("%s" %linea_index)
 		f.write("\n")
 		f.close()
+else:
+	open(path_index, 'a').close()

@@ -19,10 +19,12 @@ case "${LAUNCH_TYPE}" in
 				do
 					URI=$(printf "%s" "${URI}" | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/{/\\{/g' -e 's/}/\\}/g' -e 's/#/%23/g' -e 's/ /%20/g')	#Escape y codificación de caracteres
 					curl "${SERVERURL_LOCAL}:${DEFAULT_PORT}${URI}" >/dev/null  2>&1
+				if [ ${LAUNCH_MODE} = "multiple" ]; then
 					printf "\r                                          "
 					printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
 					uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
 					printf "\n"
+				fi
 				done < "${FILE_URI}"
 			;;
 			extended)
@@ -32,10 +34,12 @@ case "${LAUNCH_TYPE}" in
 				do
 					URI=$(printf "%s" "${URI}" | cut -d'	' -f2 | sed -e 's/\[/\\[/g' -e 's/\]/\\]/g' -e 's/{/\\{/g' -e 's/}/\\}/g' -e 's/#/%23/g' -e 's/ /%20/g')
 					curl "${SERVERURL_LOCAL}:${DEFAULT_PORT}${URI}" >/dev/null  2>&1
-					printf "\r                                          "
-					printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
-					uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
-					printf "\n"
+					if [ ${LAUNCH_MODE} = "multiple" ]; then
+						printf "\r                                          "
+						printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}"
+						uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
+						printf "\n"
+					fi
 				done < "${FILE_URI}"
 			;;
 			*)
