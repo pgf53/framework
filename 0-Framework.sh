@@ -310,21 +310,49 @@ else
 	#exportamos librerías dinámicas
 	export LD_LIBRARY_PATH="${DIR_LIB_IL_OFFLINE}"
 	for i in "${DIR_ROOT}/${DIRIN_URI}/"* ; do
-		uris_totales=$(wc -l ${i} | cut -d' ' -f'1')
 		nombre_fichero=$(basename $i)
 		nombre_fichero_index=$(printf "%s" "${nombre_fichero}" | sed "s/${FILE_IN_EXTENSION}/${INDEX_EXTENTION}/g")
-		printf "\nIniciando análisis...\n\n"
-		"${DIR_ROOT}/${IL_SCRIPT}" $i
-		#obtenemos fichero index generado
-		fichero_index="${DIR_ROOT}/${DIROUT_INDEX}/${nombre_fichero_index}"
-		num_lineas_index=$(wc -l ${fichero_index} | cut -d' ' -f'1')
-		#generamos attacks y clean
-		printf "\nIniciando clasificador...\n\n"
-		"${DIR_ROOT}/${CLASSIFY_IL_SCRIPT}" $i $uris_totales $fichero_index $num_lineas_index
-		OUT_ATTACKS_INFO="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${INFO_ATTACKS_EXTENSION}"
-		OUT_CLEAN="${DIR_ROOT}/${DIROUT_CLEAN}/$(basename ${i%.*})${CLEAN_EXTENSION}"
-		OUT_ATTACKS="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${ATTACKS_EXTENSION}"
-		imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
+		case "${LAUNCH_MODE}" in
+			1to1)
+				printf "\nAnálisis en progreso...\n\n"
+				uri_actual=1
+				uris_totales=$(wc -l ${i} | cut -d' ' -f'1')
+				while IFS= read -r input
+				do
+					printf "%s\n" "${input}" > "${DIR_TMP_FAST}/1to1_${NOMBRE_RAIZ}${FILE_IN_EXTENSION}"
+					"${DIR_ROOT}/${IL_SCRIPT}" "${DIR_TMP_FAST}/1to1_${NOMBRE_RAIZ}${FILE_IN_EXTENSION}" "${nombre_fichero_index}"
+					[ -s "${DIR_ROOT}/${DIROUT_INDEX}/${nombre_fichero_index}" ] && last_line_index=$(tail -1 "${DIR_ROOT}/${DIROUT_INDEX}/${nombre_fichero_index}") || last_line_index="uri_limpia"
+					"${DIR_ROOT}/${CLASSIFY_IL_SCRIPT}" "${i}" "${uris_totales}" "${last_line_index}" "${input}" "${uri_actual}"
+					printf "\r                                          "
+						printf "\r(%s/%s)"  "${uri_actual}"  "${uris_totales}" 
+						uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
+				done < ${i}
+				OUT_ATTACKS_INFO="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${INFO_ATTACKS_EXTENSION}"
+				OUT_CLEAN="${DIR_ROOT}/${DIROUT_CLEAN}/$(basename ${i%.*})${CLEAN_EXTENSION}"
+				OUT_ATTACKS="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${ATTACKS_EXTENSION}"
+				imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
+				rm -f "${DIR_TMP_FAST}/1to1_${NOMBRE_RAIZ}${FILE_IN_EXTENSION}"
+			;;
+			multiple)
+				uris_totales=$(wc -l ${i} | cut -d' ' -f'1')
+				printf "\nIniciando análisis...\n\n"
+				"${DIR_ROOT}/${IL_SCRIPT}" $i
+				#obtenemos fichero index generado
+				fichero_index="${DIR_ROOT}/${DIROUT_INDEX}/${nombre_fichero_index}"
+				num_lineas_index=$(wc -l ${fichero_index} | cut -d' ' -f'1')
+				#generamos attacks y clean
+				printf "\nIniciando clasificador...\n\n"
+				"${DIR_ROOT}/${CLASSIFY_IL_SCRIPT}" $i $uris_totales $fichero_index $num_lineas_index
+				OUT_ATTACKS_INFO="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${INFO_ATTACKS_EXTENSION}"
+				OUT_CLEAN="${DIR_ROOT}/${DIROUT_CLEAN}/$(basename ${i%.*})${CLEAN_EXTENSION}"
+				OUT_ATTACKS="${DIR_ROOT}/${DIROUT_ATTACKS}/$(basename ${i%.*})${ATTACKS_EXTENSION}"
+				imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
+			;;
+			*)
+				echo "Opción inválida. Las opciones soportadas son: \"1to1\" o \"multiple\". Se sale..."
+				exit 1
+			;;
+		esac
 	done
 fi
 

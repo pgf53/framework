@@ -150,19 +150,19 @@ OUT_ATTACKS = os.environ["DIR_ROOT"] + "/" + os.environ["DIROUT_ATTACKS"] + "/" 
 OUT_ATTACKS_INFO = os.environ["DIR_ROOT"] + "/" + os.environ["DIROUT_ATTACKS"] + "/" + file_info_attacks	#fichero resumen de ataques
 OUT_CLEAN = os.environ["DIR_ROOT"] + "/" + os.environ["DIROUT_CLEAN"] + "/" + file_clean	#fichero de limpias generado
 
-if os.environ["IL_MODSECURITY"] == "1":
-	line_number_index = 4
-	final_line_index = int(num_total_lineas_index) - 1
-elif os.environ["IL_NEMESIDA"] == "1":
-	line_number_index = 9
-	final_line_index = int(num_total_lineas_index) - 2
-elif os.environ["IL_SNORT"] == "1":
-	line_number_index = 13
-	final_line_index = int(num_total_lineas_index) - 2
-	
-num_uri = 1
 
 if os.environ["LAUNCH_MODE"] == "multiple":
+	if os.environ["IL_MODSECURITY"] == "1":
+		line_number_index = 4
+		final_line_index = int(num_total_lineas_index) - 1
+	elif os.environ["IL_NEMESIDA"] == "1":
+		line_number_index = 9
+		final_line_index = int(num_total_lineas_index) - 2
+	elif os.environ["IL_SNORT"] == "1":
+		line_number_index = 13
+		final_line_index = int(num_total_lineas_index) - 2
+
+	num_uri = 1
 	#Entrada del modo múltiple
 	file_index = sys.argv[3]	#fichero de index de entrada
 	with open(file_uri) as f:

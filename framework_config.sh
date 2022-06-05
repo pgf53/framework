@@ -13,7 +13,7 @@ NO_REPEAT="no"
 
 #FORMATO DE FICHERO URI DE ENTRADA.	"basic": URI
 									#"extended": ID	URI
-URIS_FORMAT="basic"
+URIS_FORMAT="extended"
 
 
 ############LAUNCHER#########
