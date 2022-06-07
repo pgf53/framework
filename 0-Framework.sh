@@ -353,6 +353,15 @@ else
 				exit 1
 			;;
 		esac
+
+		#Copiamos resultados a directorio de resultados
+		cp -rf "${PATH_LOG}" "${RESULTADOS}"
+		cp -rf "${DIROUT_INDEX}" "${RESULTADOS}"
+		cp -rf "${DIROUT_ATTACKS}" "${RESULTADOS}"
+		cp -rf "${DIROUT_CLEAN}" "${RESULTADOS}"
+
+		#Una vez hemos terminado de procesar un fichero lo anotamos en el directorio de 'entradas_finalizadas'
+		touch "entradas_finalizadas/${nombre_fichero}"
 	done
 fi
 

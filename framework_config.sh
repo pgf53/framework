@@ -5,7 +5,7 @@
 #y/o la forma en la que se presentarán los resultados.
 
 #MODO DE LANZAMIENTO. "1to1": para lanzamiento y análisis 1 a 1 de las uris. "multiple": para lanzamiento y procesado múltiple de las uris.
-LAUNCH_MODE="1to1"
+LAUNCH_MODE="multiple"
 
 #REPETICIONES EN FICHERO DE ENTRADA. "yes" elimina las uris repetidas en el fichero de entrada y posteriormente recontruye la salida para obtener el mismo resultado que si se lanzase el fichero de entrada original. Se realiza con el propósito de acelerar el anális omitiendo uris repetidas. "no" envía fichero uri de entrada original (con repeticiones si las hubiere).
 NO_REPEAT="no"
@@ -13,7 +13,7 @@ NO_REPEAT="no"
 
 #FORMATO DE FICHERO URI DE ENTRADA.	"basic": URI
 									#"extended": ID	URI
-URIS_FORMAT="extended"
+URIS_FORMAT="basic"
 
 
 ############LAUNCHER#########
