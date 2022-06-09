@@ -20,9 +20,6 @@ crea_instancia_apache()
 	sed -i "s#^ServerRoot .*#ServerRoot \"${DIR_APACHE_ONLINE}\"#g" "${FILE_CONFIG_APACHE}"	#Establecemos el serverRoot
 	sed -i "s/^Listen .*/Listen ${DEFAULT_PORT}/g" "${FILE_CONFIG_APACHE}"	#Establecemos puerto de escucha 
 
-	printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
-	printf "El puerto de escucha de apache es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
-
 	#Cambiamos en la configuración el puerto de escucha predeterminado por el usado realmente
 	sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.sh
 
@@ -36,7 +33,7 @@ crea_instancia_apache()
 
 	#Procedemos a arrancar el servidor
 	httpd -f "${FILE_CONFIG_APACHE}" -k start
-		
+	echo $?
 }
 
 crea_instancia_nemesida()
@@ -63,21 +60,29 @@ crea_instancia_nemesida()
 
 	#Procedemos a arrancar la instancia nginx
 	nginx -c "${FILE_CONFIG_NEMESIDA}"
-
-	if [ $? -eq 0 ]; then 
-		printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
-		printf "El puerto de escucha de nginx es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
-	fi 
+	echo $?
 }
 
 
 
 ###Main#######
+arranque_OK=1
 
 if [ "${MODSECURITY_ONLINE}" -eq 1 ]; then
-	crea_instancia_apache
+	while [ "${arranque_OK}" -ne 0 ]; do
+		arranque_OK=$(crea_instancia_apache)
+	done
+
+	printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
+	printf "El puerto de escucha de apache es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
+
 elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
-	crea_instancia_nemesida
+	while [ "${arranque_OK}" -ne 0 ]; do
+		arranque_OK=$(crea_instancia_nemesida)
+	done
+
+	printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
+	printf "El puerto de escucha de nginx es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
 fi
 
 

@@ -27,8 +27,8 @@ FILE_FRAMEWORK_LOG="${DIR_FRAMEWORK_LOG}framework.log"
 #Poner a 1 el detector a usar, el resto debe estar a 0
 MODSECURITY_ONLINE=0
 MODSECURITY_OFFLINE=0
-NEMESIDA_ONLINE=0
-IL_MODSECURITY=1
+NEMESIDA_ONLINE=1
+IL_MODSECURITY=0
 IL_NEMESIDA=0
 IL_SNORT=0
 
@@ -67,12 +67,12 @@ OPTIONAL_COLUMNS="3 4"
 if [ "${MODSECURITY_OFFLINE}" -eq 1 ]; then
 	PATH_AUDIT_LOG="${DIR_MODSECURITY_OFFLINE}logs/modsec_audit.log"
 	LAUNCH_TYPE="offline" #TIPO DE LANZAMIENTO. "online-local": lanza las uris contra detector ubicado en equipo local. "online-remoto": lanza las uris contra detector ubicado en equipo remoto. "offline": lanza las uris contra 	equipo local, no requiere la presencia de un servidor.
-	HIDE_COLUMNS="yes" #HABILITAR/DESHABILITAR COLUMNA. "yes" se ocultan las columnas opcionales. "no" se muestran todas las columnas de fichero "*-info.attacks"
+	HIDE_COLUMNS="no" #HABILITAR/DESHABILITAR COLUMNA. "yes" se ocultan las columnas opcionales. "no" se muestran todas las columnas de fichero "*-info.attacks"
 elif [ "${MODSECURITY_ONLINE}" -eq 1 ]; then
 	PATH_ACCESS_LOG="${DIR_APACHE_ONLINE}logs/access_log"
 	PATH_AUDIT_LOG="${DIR_APACHE_ONLINE}logs/modsec_audit.log"
 	LAUNCH_TYPE="online-local"
-	HIDE_COLUMNS="yes"
+	HIDE_COLUMNS="no"
 elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
 	PATH_ACCESS_LOG="${DIR_NEMESIDA_ONLINE}log/access.log"
 	PATH_AUDIT_LOG="${DIR_NEMESIDA_ONLINE}log/error.log"
@@ -148,4 +148,4 @@ NOMBRE_RAIZ=$(basename "${NOMBRE_RAIZ}")
 BYOBU_SESSION="${NOMBRE_RAIZ}_modo_online"
 
 #Puerto por defecto usado en 'multi-instancia online'
-DEFAULT_PORT=80
+DEFAULT_PORT=81
