@@ -79,5 +79,3 @@ case "${LAUNCH_TYPE}" in
 		exit 1
 	;;
 esac
-
-

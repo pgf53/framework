@@ -84,6 +84,3 @@ elif [ "${NEMESIDA_ONLINE}" -eq 1 ]; then
 	printf "Fecha: %s\n" "$(date)" >> "${FILE_FRAMEWORK_LOG}"
 	printf "El puerto de escucha de nginx es: %s\n" "${DEFAULT_PORT}" >> "${FILE_FRAMEWORK_LOG}"
 fi
-
-
-

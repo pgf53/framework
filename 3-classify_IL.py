@@ -250,4 +250,3 @@ elif os.environ["LAUNCH_MODE"] == "1to1":
 			inserta_attack(line_index, uri, num_uri)
 		else:
 			inserta_clean(uri, num_uri)
-

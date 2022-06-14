@@ -292,10 +292,15 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 			rm -f "${DIR_TMP}/${FILENAME}"
 		fi
 		
+		NOMBRE_SIN_EXTENSION=$(printf "%s" "${FILENAME}" | sed "s/${FILE_IN_EXTENSION}//g")
 		#Copiamos resultados a directorio de resultados
+		touch "${PATH_LOG}/${NOMBRE_SIN_EXTENSION}${LOG_EXTENSION}"
 		cp -rf "${PATH_LOG}" "${RESULTADOS}"
+		touch "${DIROUT_INDEX}/${NOMBRE_SIN_EXTENSION}${INDEX_EXTENTION}"
 		cp -rf "${DIROUT_INDEX}" "${RESULTADOS}"
+		touch "${DIROUT_ATTACKS}/${NOMBRE_SIN_EXTENSION}${ATTACKS_EXTENSION}"
 		cp -rf "${DIROUT_ATTACKS}" "${RESULTADOS}"
+		touch "${DIROUT_CLEAN}/${NOMBRE_SIN_EXTENSION}${CLEAN_EXTENSION}"
 		cp -rf "${DIROUT_CLEAN}" "${RESULTADOS}"
 
 		#Una vez hemos terminado de procesar un fichero lo anotamos en el directorio de 'entradas_finalizadas'
@@ -354,10 +359,11 @@ else
 			;;
 		esac
 
+		NOMBRE_SIN_EXTENSION=$(printf "%s" "${nombre_fichero}" | sed "s/${FILE_IN_EXTENSION}//g")
 		#Copiamos resultados a directorio de resultados
-		cp -rf "${PATH_LOG}" "${RESULTADOS}"
-		cp -rf "${DIROUT_INDEX}" "${RESULTADOS}"
+		touch "${DIROUT_ATTACKS}/${NOMBRE_SIN_EXTENSION}${ATTACKS_EXTENSION}"
 		cp -rf "${DIROUT_ATTACKS}" "${RESULTADOS}"
+		touch "${DIROUT_CLEAN}/${NOMBRE_SIN_EXTENSION}${CLEAN_EXTENSION}"
 		cp -rf "${DIROUT_CLEAN}" "${RESULTADOS}"
 
 		#Una vez hemos terminado de procesar un fichero lo anotamos en el directorio de 'entradas_finalizadas'
