@@ -76,6 +76,7 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 				if os.environ["LAUNCH_MODE"] == "multiple":
 					print(str(num_uri_log_actual) + "/" + num_uris_log_totales)
 					num_uri_log_actual += 1
+					pl_min = 4
 			elif re.search(SECCIONB, linea_log):
 				seccion = "SECCIONB"
 			elif re.search(SECCIONH, linea_log):
@@ -117,8 +118,9 @@ if os.path.isfile(file_log) and os.stat(file_log).st_size != 0:
 				inicio_pl = linea_log.find(PATRONPLinicio)
 				if inicio_pl != -1:
 					pl_linea = linea_log[inicio_pl+len(PATRONPLinicio)]
-					if int(pl_linea) < int(pl_min):
-						pl_min = pl_linea
+					if pl_linea.isnumeric():	#Bug (modsecv2) en log que genera líneas sin número e.g. [tag "paranoia-level/\n
+						if int(pl_linea) < int(pl_min):
+							pl_min = pl_linea
 			if seccion == "SECCIONZ":
 				ids_registrados = list(dict.fromkeys(ids_registrados))
 				exist_id = ids_registrados.count('949110')
