@@ -13,7 +13,7 @@ Ejecutar para instalar dependencias de framework y de sus detectores integrados.
 
 ./0-Frameworks
 
-Ejecuta análsis completo atendiendo a la configuración establecida. Ejecutaría Scripts siguiendo el orden 1-Launcher.sh ---> 2-analyzer*.py ---> 3-classify*.py
+Ejecuta análisis completo atendiendo a la configuración establecida. Orden de invocación de los scripts: 1-Launcher.sh ---> 2-analyzer*.py ---> 3-classify*.py
 
 ./1-Launcher.sh fichero_uri
 
