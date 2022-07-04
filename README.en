@@ -1,0 +1,70 @@
+# framework
+
+Tool that allows the insertion of security modules in a fast and flexible way that have the purpose of analyzing uris.
+
+
+To perform a complete analysis, enter the uris file in the '01-Uri/' directory, set the desired configuration and run the '0-Framework.sh' script.
+
+Script:
+
+./install.sh
+
+Run to install dependencies of the framework and its built-in IDS's.
+
+
+./0-Frameworks
+
+Runs a full scan according to the configured settings. Script invocation order: 1-Launcher.sh ---> 2-analyzer*.py ---> 3-classify*.py
+
+
+./1-Launcher.sh file_uri
+
+ It launches the input uri file according to the established configuration. Generate log file.
+ 
+ file_uri: input file uri
+
+
+./2-analyzer.py log_file num_uris
+
+Performs the analysis of the log generated in the previous point for the IDS's modSecurityV2 and modSecurityV3. Generate index file.
+
+log_file: input log file
+num_uris: number of uris present in the log (it is used merely to show the progress of the analysis)
+
+
+./2-analyzer_nemesida_online.py log_file num_uris
+
+Same as above but for online nemeside detector
+
+
+./3-classify.py uri_file total_uris index_file
+
+It performs the classification of the uris (in 'clean' or 'attacks') by comparing the uris of the input file with those detected as attacks in the index file.
+
+file_uri: input file uri
+total_uris: number of input file uris. Used to show progress
+file_index: index file used in the classification of the uris
+
+
+./3-classify_IL.py
+
+Similar to the previous one but used in the classification of integrated detectors in IL.
+
+
+./IL.sh file_uri
+
+Runs IL detector set in configuration.
+
+file_uri: input file uri to parse
+
+
+MLAv3_launcher.out file_uri
+
+Run ModSecurityV3 detector.
+
+file_uri: input file uri to parse
+
+
+./zclean.sh
+
+Clean directories to perform a new analysis.
