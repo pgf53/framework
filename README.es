@@ -1,9 +1,16 @@
 # framework
 
-Herramienta que permite la inserción de módulos de seguridad de manera rápida y flexible que tienen por objeto el análisis de uris.
+Herramienta que permite la inserción de módulos de seguridad de manera rápida y flexible, que tienen por objeto el análisis de uris.
 
 
 Para realizar un análisis completo, introducir fichero de uris en directorio '01-Uri/', establecer configuración deseada y ejecutar script '0-Framework.sh'.
+
+Los resultados del análisis se almacenarán en los directorios:
+
+02-Log/: contiene los logs generados por el IDS.
+03-Index/: fichero resumen de los ataques registrados en el log. 
+04A-Attacks/: contiene las uris detectadas como ataques. Dos formatos: '.attacks' uris detectadas como ataques, '-info.attacks' fichero resumen del análisis con información extendida.
+04B-Clean: contiene las uris detectadas como 'limpias'. 
 
 Scripts:
 
