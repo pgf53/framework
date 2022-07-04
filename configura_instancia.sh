@@ -1,8 +1,7 @@
 #!/bin/sh
 
 #### Cargar configuracion
-. ./framework_config.sh
-. ./framework_config_interna.sh
+. ./framework_config_interna.conf
 
 #Obtiene en variable 'DEFAULT_PORT' un puerto disponible
 calcula_puerto()
@@ -21,7 +20,7 @@ crea_instancia_apache()
 	sed -i "s/^Listen .*/Listen ${DEFAULT_PORT}/g" "${FILE_CONFIG_APACHE}"	#Establecemos puerto de escucha 
 
 	#Cambiamos en la configuración el puerto de escucha predeterminado por el usado realmente
-	sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.sh
+	sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.conf
 
 	#Establecemos puerto HTTPS
 	DEFAULT_PORT=$((DEFAULT_PORT+1))
@@ -56,7 +55,7 @@ crea_instancia_nemesida()
 	sed -i "s#^nwaf_rules .*#nwaf_rules ${DIR_NEMESIDA_ONLINE}nwaf/rules.bin;#g" "${FILE_NWAF}"
 
 	#Cambiamos en la configuración el puerto de escucha predeterminado por el usado realmente
-	sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.sh
+	sed  -i "s/^DEFAULT_PORT=.*/DEFAULT_PORT=${DEFAULT_PORT}/g" ./framework_config_interna.conf
 
 	#Procedemos a arrancar la instancia nginx
 	nginx -c "${FILE_CONFIG_NEMESIDA}"

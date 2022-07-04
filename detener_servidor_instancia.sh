@@ -1,8 +1,7 @@
 #!/bin/sh
 
 #### Cargar configuracion
-. ./framework_config.sh
-. ./framework_config_interna.sh
+. ./framework_config_interna.conf
 
 
 if [ "${MODSECURITY_ONLINE}" -eq 1 ]; then

@@ -1,9 +1,7 @@
 #!/bin/sh
 
 #### Cargar configuracion
-. ./framework_config.sh
-. ./framework_config_interna.sh
-
+. ./framework_config_interna.conf
 
 fichero_entrada="$1"
 nombre_fichero=$(basename ${fichero_entrada})

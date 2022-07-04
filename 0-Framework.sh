@@ -2,11 +2,10 @@
 
 #Introducimos ruta raíz de la herramienta
 DIR_ROOT=$(pwd)
-sed -i "s#DIR_ROOT=.*#DIR_ROOT=\"${DIR_ROOT}\"#g" "framework_config_interna.sh"
+sed -i "s#DIR_ROOT=.*#DIR_ROOT=\"${DIR_ROOT}\"#g" "framework_config_interna.conf"
 
 #### Cargar configuracion
-. ./framework_config.sh
-. ./framework_config_interna.sh
+. ./framework_config_interna.conf
 
 
 #funciones
@@ -92,8 +91,8 @@ rm -rf "${PATH_LOG}" "${DIROUT_INDEX}" "${DIROUT_ATTACKS}" "${DIROUT_CLEAN}" "${
 mkdir "${PATH_LOG}" "${DIROUT_INDEX}" "${DIROUT_ATTACKS}" "${DIROUT_CLEAN}" "${RESULTADOS}" 1>/dev/null 2>&1
 
 #Cargo variables para analizador y clasificador
-set -a; source "${DIR_ROOT}/framework_config.sh"; set +a
-set -a; source "${DIR_ROOT}/framework_config_interna.sh"; set +a
+set -a; source "${DIR_ROOT}/framework_config.conf"; set +a
+set -a; source "${DIR_ROOT}/framework_config_interna.conf"; set +a
 
 #Nos aseguramos de que todas las uris de fichero de entrada empiecen por caracter '/'
 ./"${ANADE_BARRA}" "${DIR_ROOT}/${DIRIN_URI}/"
@@ -139,17 +138,17 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 						byobu new-session -s "${BYOBU_SESSION}" -d "${DIR_ROOT}/${LOCAL_MONITORIZATION_SCRIPT} ${OUT_LOG_TMP}"	#monitorizamos acces_log, ante un cambio entramos en "fase 2 análisis"
 					elif [ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "yes" ]; then
 
-						sshpass -p "${PASS}" ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_SCRIPT} ${REMOTE_MONITORIZATION_SCRIPT} framework_config.sh framework_config_interna.sh 1>/dev/null 2>&1"	#preparamos directorio
+						sshpass -p "${PASS}" ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_SCRIPT} ${REMOTE_MONITORIZATION_SCRIPT} framework_config.conf framework_config_interna.conf 1>/dev/null 2>&1"	#preparamos directorio
 
-						sshpass -p "${PASS}" scp "${DIR_ROOT}/${REMOTE_SCRIPT}" "${DIR_ROOT}/${REMOTE_MONITORIZATION_SCRIPT}" "${DIR_ROOT}/framework_config.sh" "${DIR_ROOT}/framework_config_interna.sh" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}	#transferimos script a ejecutar en equipo remoto para monitorizar
+						sshpass -p "${PASS}" scp "${DIR_ROOT}/${REMOTE_SCRIPT}" "${DIR_ROOT}/${REMOTE_MONITORIZATION_SCRIPT}" "${DIR_ROOT}/framework_config.conf" "${DIR_ROOT}/framework_config_interna.conf" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}	#transferimos script a ejecutar en equipo remoto para monitorizar
 
 						sshpass -p "${PASS}" ssh "${USER_REMOTE}"@${IP_REMOTE} "cd ${DIR_REMOTE}; ./${REMOTE_SCRIPT} ${OUT_LOG_TMP}" < /dev/null	#ejecutamos script. ("remoto" invoca a "monitoriza-remoto" en nueva sesión byobu)
 
 					elif [ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "no" ]; then
 
-						ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_SCRIPT} ${REMOTE_MONITORIZATION_SCRIPT} framework_config.sh framework_config_interna.sh 1>/dev/null 2>&1"	#preparamos directorio
+						ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_SCRIPT} ${REMOTE_MONITORIZATION_SCRIPT} framework_config.conf framework_config_interna.conf 1>/dev/null 2>&1"	#preparamos directorio
 
-						scp "${DIR_ROOT}/${REMOTE_SCRIPT}" "${DIR_ROOT}/${REMOTE_MONITORIZATION_SCRIPT}" "${DIR_ROOT}/framework_config.sh" "${DIR_ROOT}/framework_config_interna.sh" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}	#transferimos script a ejecutar en 																																												equipo remoto para monitorizar
+						scp "${DIR_ROOT}/${REMOTE_SCRIPT}" "${DIR_ROOT}/${REMOTE_MONITORIZATION_SCRIPT}" "${DIR_ROOT}/framework_config.conf" "${DIR_ROOT}/framework_config_interna.conf" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}	#transferimos script a ejecutar en 																																												equipo remoto para monitorizar
 						ssh "${USER_REMOTE}"@${IP_REMOTE} "cd ${DIR_REMOTE}; ./${REMOTE_SCRIPT} ${OUT_LOG_TMP}" < /dev/null	#ejecutamos script. ("remoto" invoca a "monitoriza-remoto" en nueva sesión byobu)
 					fi
 
@@ -205,12 +204,14 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 						uri_actual=$((uri_actual+1))	#Incrementamos contador de lectura
 					done < "${i}"
 				printf "\n"
+
 				[ "${LAUNCH_TYPE}" = "online-local" ] && byobu kill-session -t "${BYOBU_SESSION}"
 				[ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "yes" ] && sshpass -p "${PASS}" ssh "${USER_REMOTE}"@${IP_REMOTE} "byobu kill-session -t ${BYOBU_SESSION}"
 				[ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "no" ] && ssh "${USER_REMOTE}"@${IP_REMOTE} "byobu kill-session -t ${BYOBU_SESSION}"
 				[ "${LAUNCH_TYPE}" = "online-local" -o "${LAUNCH_TYPE}" = "online-remoto" ] && rm -f "${OUT_LOG_TMP}" #"${OUT_ACCESS}"
-				#Borrar access_log de 02B-Log y añadir cabeceras 
-					imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
+				
+				#añadir cabeceras 
+				imprimirCabecera "${OUT_ATTACKS_INFO}" "${OUT_ATTACKS_INFO_HIDE}" "${OUT_CLEAN}" "${OUT_ATTACKS}"
 			;;
 
 
@@ -224,12 +225,12 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 					[ "${LAUNCH_TYPE}" = "online-local" ] && > "${PATH_ACCESS_LOG}"	#Limpiamos access_log
 					elif [ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "yes" ]; then
 						#Preparamos entorno de trabajo en equipo remoto
-						sshpass -p "${PASS}" ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; > ${PATH_AUDIT_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_MULTIPLE_SCRIPT} ${SEND_LOG_SCRIPT} framework_config.sh framework_config_interna.sh 1>/dev/null 2>&1"
-						sshpass -p "${PASS}" scp "${DIR_ROOT}/${REMOTE_MULTIPLE_SCRIPT}" "${DIR_ROOT}/${SEND_LOG_SCRIPT}" "${DIR_ROOT}/framework_config.sh" "${DIR_ROOT}/framework_config_interna.sh" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}
+						sshpass -p "${PASS}" ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; > ${PATH_AUDIT_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_MULTIPLE_SCRIPT} ${SEND_LOG_SCRIPT} framework_config.conf framework_config_interna.conf 1>/dev/null 2>&1"
+						sshpass -p "${PASS}" scp "${DIR_ROOT}/${REMOTE_MULTIPLE_SCRIPT}" "${DIR_ROOT}/${SEND_LOG_SCRIPT}" "${DIR_ROOT}/framework_config.conf" "${DIR_ROOT}/framework_config_interna.conf" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}
 					elif [ "${LAUNCH_TYPE}" = "online-remoto" -a "${SSH_PASS}" = "no" ]; then
 						#Preparamos entorno de trabajo en equipo remoto
-						ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; > ${PATH_AUDIT_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_MULTIPLE_SCRIPT} ${SEND_LOG_SCRIPT} framework_config.sh framework_config_interna.sh 1>/dev/null 2>&1"
-						scp "${DIR_ROOT}/${REMOTE_MULTIPLE_SCRIPT}" "${DIR_ROOT}/${SEND_LOG_SCRIPT}" "${DIR_ROOT}/framework_config.sh" "${DIR_ROOT}/framework_config_interna.sh" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}
+						ssh "${USER_REMOTE}"@${IP_REMOTE} "> ${PATH_ACCESS_LOG}; > ${PATH_AUDIT_LOG}; cd ${DIR_REMOTE}; rm -f ${REMOTE_MULTIPLE_SCRIPT} ${SEND_LOG_SCRIPT} framework_config.conf framework_config_interna.conf 1>/dev/null 2>&1"
+						scp "${DIR_ROOT}/${REMOTE_MULTIPLE_SCRIPT}" "${DIR_ROOT}/${SEND_LOG_SCRIPT}" "${DIR_ROOT}/framework_config.conf" "${DIR_ROOT}/framework_config_interna.conf" "${USER_REMOTE}"@"${IP_REMOTE}":${DIR_REMOTE}
 					fi
 
 					uri_actual=1
@@ -293,6 +294,7 @@ if [ "${IL_MODSECURITY}" -ne 1 -a  "${IL_NEMESIDA}" -ne 1 -a "${IL_SNORT}" -ne 1
 		fi
 		
 		NOMBRE_SIN_EXTENSION=$(printf "%s" "${FILENAME}" | sed "s/${FILE_IN_EXTENSION}//g")
+
 		#Copiamos resultados a directorio de resultados
 		touch "${PATH_LOG}/${NOMBRE_SIN_EXTENSION}${LOG_EXTENSION}"
 		cp -rf "${PATH_LOG}" "${RESULTADOS}"

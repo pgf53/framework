@@ -1,8 +1,7 @@
 #!/bin/sh
 
-#carga de ficheros de configuración
-. ./framework_config.sh
-. ./framework_config_interna.sh
+#### Cargar configuracion
+. ./framework_config_interna.conf
 
 OUT_LOG_TMP="$1"
 
