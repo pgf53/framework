@@ -17,7 +17,7 @@ Ejecuta análisis completo atendiendo a la configuración establecida. Orden de 
 
 ./1-Launcher.sh fichero_uri
 
- Realiza el lanzamiento según la configuración establecida. Genera fichero de log.
+ Realiza el lanzamiento del fichero uri de entrada según la configuración establecida. Genera fichero de log.
  
  fichero_uri: fichero uri de entrada
 
