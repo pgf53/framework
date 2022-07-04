@@ -65,6 +65,6 @@ Run ModSecurityV3 detector.
 file_uri: input file uri to parse
 
 
-./zclean.sh
+./zlimpiar.sh
 
 Clean directories to perform a new analysis.
