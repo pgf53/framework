@@ -1,0 +1,31 @@
+--435dfe6e-A--
+[02/Aug/2022:22:45:32 +0200] YumM7OKyEzIFakjZ-vrlQAAAAAE 127.0.0.1 36927 127.0.0.1 85
+--435dfe6e-B--
+GET /solr/statistics/update?wt=javabin&version=2 HTTP/1.1
+User-Agent: curl/7.29.0
+Host: localhost:85
+Accept: */*
+
+--435dfe6e-F--
+HTTP/1.1 404 Not Found
+Content-Length: 220
+Content-Type: text/html; charset=iso-8859-1
+
+--435dfe6e-E--
+
+--435dfe6e-H--
+Message: Warning. Unconditional match in SecAction. [file "/opt/framework/detectores/apache_online_local/conf.d/mod_security.conf"] [line "54"] [id "1000"] [msg "Incoming Anomaly Score: 0"]
+Message: collections_remove_stale: Failed to access DBM file "/opt/framework/detectores/apache_online_local/lib/mod_security/global": Permission denied
+Message: collections_remove_stale: Failed to access DBM file "/opt/framework/detectores/apache_online_local/lib/mod_security/ip": Permission denied
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 127.0.0.1] ModSecurity: Warning. Unconditional match in SecAction. [file "/opt/framework/detectores/apache_online_local/conf.d/mod_security.conf"] [line "54"] [id "1000"] [msg "Incoming Anomaly Score: 0"] [hostname "localhost"] [uri "/solr/statistics/update"] [unique_id "YumM7OKyEzIFakjZ-vrlQAAAAAE"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 127.0.0.1] ModSecurity: collections_remove_stale: Failed to access DBM file "/opt/framework/detectores/apache_online_local/lib/mod_security/global": Permission denied [hostname "localhost"] [uri "/solr/statistics/update"] [unique_id "YumM7OKyEzIFakjZ-vrlQAAAAAE"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 127.0.0.1] ModSecurity: collections_remove_stale: Failed to access DBM file "/opt/framework/detectores/apache_online_local/lib/mod_security/ip": Permission denied [hostname "localhost"] [uri "/solr/statistics/update"] [unique_id "YumM7OKyEzIFakjZ-vrlQAAAAAE"]
+Stopwatch: 1659473132629885 7489 (- - -)
+Stopwatch2: 1659473132629885 7489; combined=5279, p1=1557, p2=2540, p3=107, p4=324, p5=579, sr=169, sw=1, l=0, gc=171
+Response-Body-Transformed: Dechunked
+Producer: ModSecurity for Apache/2.9.2 (http://www.modsecurity.org/); OWASP_CRS/3.2.0.
+Server: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.4.16
+Engine-Mode: "ENABLED"
+
+--435dfe6e-Z--
+
